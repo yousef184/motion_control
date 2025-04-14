@@ -1,0 +1,131 @@
+{
+    "headerId": 3,
+    "timestamp": "2024-11-29T14:49:32.4926Z",
+    "version": "V2.1.0",
+    "manufacturer": "IFL",
+    "serialNumber": "IFL_1",
+    "orderId": "2",
+    "orderUpdateId": 0,
+    "nodes": [
+        {
+            "nodeId": "N10",
+            "sequenceId": 1,
+            "released": true,
+            "nodePosition": {
+                "x": 6.85,
+                "y": 6.64,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N34",
+            "sequenceId": 3,
+            "released": true,
+            "nodePosition": {
+                "x": 6.01,
+                "y": 5.9,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N33",
+            "sequenceId": 5,
+            "released": true,
+            "nodePosition": {
+                "x": 6.01,
+                "y": 5.06,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N1",
+            "sequenceId": 7,
+            "released": false,
+            "nodePosition": {
+                "x": 6.82,
+                "y": 5.12,
+                "mapId": "Map_1"
+            },
+            "actions": [
+                {
+                    "actionType": "pick",
+                    "actionId": "3b9fc68a-c460-4dbb-a043-43b2dbee0a82",
+                    "blockingType": "HARD"
+                }
+            ]
+        },
+        {
+            "nodeId": "N2",
+            "sequenceId": 9,
+            "released": false,
+            "nodePosition": {
+                "x": 6.82,
+                "y": 5.74,
+                "mapId": "Map_1"
+            },
+            "actions": [
+                {
+                    "actionType": "drop",
+                    "actionId": "c3b910e9-66a0-4bb0-8fdc-32c34df602e5",
+                    "blockingType": "HARD"
+                }
+            ]
+        },
+        {
+            "nodeId": "N10",
+            "sequenceId": 11,
+            "released": false,
+            "nodePosition": {
+                "x": 6.85,
+                "y": 6.64,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        }
+    ],
+    "edges": [
+        {
+            "edgeId": "N10-N34",
+            "sequenceId": 2,
+            "released": true,
+            "startNodeId": "N10",
+            "endNodeId": "N34",
+            "actions": []
+        },
+        {
+            "edgeId": "N33-N34",
+            "sequenceId": 4,
+            "released": true,
+            "startNodeId": "N33",
+            "endNodeId": "N34",
+            "actions": []
+        },
+        {
+            "edgeId": "N1-N33",
+            "sequenceId": 6,
+            "released": false,
+            "startNodeId": "N1",
+            "endNodeId": "N33",
+            "actions": []
+        },
+        {
+            "edgeId": "N1-N2",
+            "sequenceId": 8,
+            "released": false,
+            "startNodeId": "N1",
+            "endNodeId": "N2",
+            "actions": []
+        },
+        {
+            "edgeId": "N2-N10",
+            "sequenceId": 10,
+            "released": false,
+            "startNodeId": "N2",
+            "endNodeId": "N10",
+            "actions": []
+        }
+    ]
+}
