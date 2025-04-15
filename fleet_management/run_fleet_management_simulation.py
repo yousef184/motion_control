@@ -32,11 +32,11 @@ else:
 sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 
 # Import the necessary classes.
-from fleet_management.graph import Graph
-from fleet_management.agents import Agents
-from fleet_management.task_management import TaskManagement
-from fleet_management.task_assignment import TaskAssignment
-from fleet_management.fleet_management import FleetManagement
+from src.fleet_management.graph import Graph
+from src.fleet_management.agents import Agents
+from src.fleet_management.task_management import TaskManagement
+from src.fleet_management.task_assignment import TaskAssignment
+from src.fleet_management.fleet_management import FleetManagement
 
 def setup_logging(log_file_path: str) -> logging.Logger:
     """
