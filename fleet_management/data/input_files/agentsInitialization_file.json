@@ -1,0 +1,18 @@
+{
+    "mapId": "Map_1",
+    "agents": [
+        {
+            "agentId": "1",
+            "stateTopic": "IMRL/fleet_management/agent_1/state",
+            "orderTopic": "IMRL/fleet_management/agent_1/order",
+            "visualizationTopic": "IMRL/fleet_management/agent_1/visualization",
+            "agentPosition": {
+                "x": 1.875,
+                "y": 1.875,
+                "theta": 3.141592653589793
+            },
+            "agentVelocity": 1.0,
+            "agentRotationVelocity": 3.0
+        }
+    ]
+}
