@@ -111,7 +111,7 @@ def run_simulation(config_manager: ConfigManager, logging: logging.Logger):
         subprocess.Popen([agent_simulation_path])
         # Wait for the agent simulation to start.
         # TODO: You may need to adjust the sleep time based on the time it takes for the agent simulation to start on your system.
-        time.sleep(5)
+        time.sleep(3)
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to execute {agent_simulation_path}: {e}")
         sys.exit(1)
