@@ -1,0 +1,396 @@
+{
+    "metaInformation": {
+        "projectIdentification": "IndustrialMobileRoboticsLab_ExampleLayout",
+        "creator": "KIT_IFL",
+        "exportTimestamp": "2024-12-12T09:48:58.30Z",
+        "lifVersion": "1.0.0"
+    },
+    "layouts": [
+        {
+            "layoutId": "Layout_1",
+            "layoutVersion": "1",
+            "nodes": [
+                {
+                    "nodeId": "N1",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 0.625,
+                        "y": 1.875
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N2",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 0.625,
+                        "y": 3.125
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N3",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 1.875,
+                        "y": 1.875
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N4",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 1.875,
+                        "y": 3.125
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N5",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 3.875,
+                        "y": 1.875
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N6",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 3.875,
+                        "y": 3.125
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N7",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 5.125,
+                        "y": 1.875
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N8",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 5.125,
+                        "y": 3.125
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N9",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 1.875,
+                        "y": 0.625
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N10",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 1.875,
+                        "y": 4.375
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N11",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 3.875,
+                        "y": 0.625
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                },
+                {
+                    "nodeId": "N12",
+                    "mapId": "Map_1",
+                    "nodePosition": {
+                        "x": 3.875,
+                        "y": 4.375
+                    },
+                    "vehicleTypeNodeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1"
+                        }
+                    ]
+                }
+            ],
+            "edges": [
+                {
+                    "edgeId": "E1",
+                    "startNodeId": "N1",
+                    "endNodeId": "N3",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E2",
+                    "startNodeId": "N2",
+                    "endNodeId": "N4",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E3",
+                    "startNodeId": "N3",
+                    "endNodeId": "N4",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E4",
+                    "startNodeId": "N3",
+                    "endNodeId": "N5",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E5",
+                    "startNodeId": "N4",
+                    "endNodeId": "N6",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E6",
+                    "startNodeId": "N5",
+                    "endNodeId": "N6",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E7",
+                    "startNodeId": "N5",
+                    "endNodeId": "N7",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E8",
+                    "startNodeId": "N6",
+                    "endNodeId": "N8",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E9",
+                    "startNodeId": "N3",
+                    "endNodeId": "N9",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E10",
+                    "startNodeId": "N4",
+                    "endNodeId": "N10",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E11",
+                    "startNodeId": "N5",
+                    "endNodeId": "N11",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                },
+                {
+                    "edgeId": "E12",
+                    "startNodeId": "N6",
+                    "endNodeId": "N12",
+                    "vehicleTypeEdgeProperties": [
+                        {
+                            "vehicleTypeId": "Vehicle_Type_1",
+                            "rotationAllowed": true
+                        }
+                    ]
+                }
+            ],
+            "stations": [
+                {
+                    "stationId": "S1",
+                    "interactionNodeIds": [
+                        "N1"
+                    ],
+                    "stationPosition": {
+                        "x": 0.625,
+                        "y": 1.875
+                    },
+                    "stationType": "PRODUCTION"
+                },
+                {
+                    "stationId": "S2",
+                    "interactionNodeIds": [
+                        "N2"
+                    ],
+                    "stationPosition": {
+                        "x": 0.625,
+                        "y": 3.125
+                    },
+                    "stationType": "PRODUCTION"
+                },
+                {
+                    "stationId": "S3",
+                    "interactionNodeIds": [
+                        "N7"
+                    ],
+                    "stationPosition": {
+                        "x": 5.125,
+                        "y": 1.875
+                    },
+                    "stationType": "PRODUCTION"
+                },
+                {
+                    "stationId": "S4",
+                    "interactionNodeIds": [
+                        "N8"
+                    ],
+                    "stationPosition": {
+                        "x": 5.125,
+                        "y": 3.125
+                    },
+                    "stationType": "PRODUCTION"
+                },
+                {
+                    "stationId":"C1",
+                    "interactionNodeIds":[
+                        "N9"
+                    ],
+                    "stationPosition": {
+                        "x": 1.875,
+                        "y": 0.625
+                    },
+                    "stationType": "CHARGING"
+                },
+                {
+                    "stationId":"C2",
+                    "interactionNodeIds":[
+                        "N10"
+                    ],
+                    "stationPosition": {
+                        "x": 1.875,
+                        "y": 4.375
+                    },
+                    "stationType": "CHARGING"
+                },
+                {
+                    "stationId":"C3",
+                    "interactionNodeIds":[
+                        "N11"
+                    ],
+                    "stationPosition": {
+                        "x": 3.875,
+                        "y": 0.625
+                    },
+                    "stationType": "CHARGING"
+                },
+                {
+                    "stationId":"C4",
+                    "interactionNodeIds":[
+                        "N12"
+                    ],
+                    "stationPosition": {
+                        "x": 3.875,
+                        "y": 4.375
+                    },
+                    "stationType": "CHARGING"
+                }
+            ]
+        }
+    ]
+}
