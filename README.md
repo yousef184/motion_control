@@ -13,6 +13,12 @@ In the folders `fleet_management` and `motion_control` you can find the code for
 ## Motion Control Simulation
 
 ### Run the Motion Control Simulation
+- Open the file `run_motion_control_simulation.py` in the directory `.../imrl_workspace/motion_control`.
+- The default task is the task 1, you need to change the task number in the file `run_motion_control_simulation.py`.
+- Run it by clicking the run button in the upper right corner of the window or execute it in a terminal.
+- The motion control simulation should open in some seconds and an order will be published. The route is visualized as a green path in the simulation.
+- Now you can control the via mqtt. A script `.../imrl_workspace/motion_control/src/motion_control/keyboard_control_commented.py` is offered to help you test the simulation.
+- You can reset the task by clicking on the 'reset' in the simulation UI. The mobile robot will be reinitialized and the oder will be published again.
 
 ## Fleet Management Simulation
 
