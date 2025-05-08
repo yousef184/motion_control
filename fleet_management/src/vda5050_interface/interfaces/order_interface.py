@@ -33,7 +33,7 @@ class OrderInterface:
         # TODO: Generate the order message automatically based on the passed parameters.
 
         # Load the example order message.
-        order_msg_path = "data/input_files/OrderMessage_Example.json"
+        order_msg_path = "data/input_files/orderMessage_Example.json"
         with open(order_msg_path, 'r') as order_msg_file:
             order_msg = json.load(order_msg_file)
 
