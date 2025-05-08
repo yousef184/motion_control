@@ -8,7 +8,7 @@ imrl_workspace/ <br>
 ├── motion_control/ <br>
 └── README.md <br>
 
-In the folders `fleet_management` and `motion_control` you can find the code for the praptical part of this course. In the folder `json_examples` you can find relevant json files, which are given as examples.
+The practical part of this course is organized into two main folders: `fleet_management` and `motion_control`. Each of these contain a `data` folder and a `scr` folder. The `data` folders contains the data required to run the simulations and the `src` folders contain the source code of the simulation. Additionally, the `json_examples` folder provides examples of all JSON files you are goung to work with.
 
 ## Motion Control Simulation
 
@@ -23,7 +23,9 @@ In the folders `fleet_management` and `motion_control` you can find the code for
 ## Fleet Management Simulation
 
 ### Run the Fleet Management Simulation
-
-- Open the file `run_fleet_management_simulation.py` in the directory `.../imrl_workspace/fleet_managmenet` and run it by clicking the run button in the upper right corner of the window.
-- Now the fleet managmenet simulation should open and the mobile robot should execute a transportation task. If the mobile robot does not move, try increasing the sleep time in code line 114 of the file `run_fleet_management_simulation.py`. Starting the `agent_simulation` executable may take longer.
+- Open the file `run_fleet_management_simulation.py` in the directory `.../imrl_workspace/fleet_managment`.
+- Run it by clicking the run button in the upper right corner of the window or execute it in a terminal.
+- The fleet managmenet simulation should open and an order message should be published by the fleet management after a few seconds. 
+- After receiving the order message, the mobile robot should execute one transportation task.
+- If the mobile robot does not move, try increasing the sleep time in code line 114 of the file `run_fleet_management_simulation.py`. Starting the `agent_simulation` executable may take longer and must be done before the order message is published.
 - Detailed instructions on how to use the fleet management simulation can be found on Ilias.
