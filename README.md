@@ -28,4 +28,5 @@ The practical part of this course is organized into two main folders: `fleet_man
 - The fleet managmenet simulation should open and an order message should be published by the fleet management after a few seconds. 
 - After receiving the order message, the mobile robot should execute one transportation task.
 - If the mobile robot does not move, try increasing the sleep time in code line 114 of the file `run_fleet_management_simulation.py`. Starting the `agent_simulation` executable may take longer and must be done before the order message is published.
+- End the simulation by killing the terminal.
 - Detailed instructions on how to use the fleet management simulation can be found on Ilias.
