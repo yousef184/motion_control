@@ -1,4 +1,4 @@
-# IMRL Workspace
+# Industrial Mobile Robotics Lab - Workspace
 
 The structure of the IMRL workspace is as follows:
 
@@ -32,6 +32,14 @@ The practical part of this course is organized into two main folders: `fleet_man
 - End the simulation by killing the terminal.
 - Detailed instructions on how to use the fleet management simulation can be found on Ilias.
 
+### Troubleshooting
+- If you receive the error message `PermissionError: [Errno 13] Permission denied: 'src/mobile_robot_simulation/dist/agent_simulation'` when executing the file `run_fleet_management_simulation.py`, proceed as follows:
+- Navigate to the folder `.../imrl_workspace/fleet_managment/src/mobile_robot_simulation/dist` and execute the following command:
+    ```
+    chmod +x agent_simulation
+    ```
+- Now the fleet management simulation should run.
+
 ## Getting Started (not relevant if you are using an IFL USB stick or laptop - everything is already set up here)
 
 Make sure that Ubuntu 24 is running on your computer.
@@ -59,7 +67,7 @@ Make sure that Ubuntu 24 is running on your computer.
 ### Conda - Virtual Environment
 
 1. Install Anaconda:
-    - If not already installed, install [Anaconda](https://www.anaconda.com/download/success) based on the instructions for Ubuntu as your conda package and environment manager.
+    - If not already installed, install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) based on the instructions for Ubuntu as your conda package and environment manager.
     - Here you can find a [conda cheatsheet](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf) with all important conda commands.
 
 2. Create a virtual environment:
@@ -91,10 +99,16 @@ Make sure that Ubuntu 24 is running on your computer.
 
 1. Install the MQTT broker Mosquitto:
     - If not already installed, install [Mosquitto](https://mosquitto.org/download/) based on the instructions for Ubuntu as your MQTT broker.
+    - Open a terminal and execute the following commands:
+        ``` 
+        sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+        sudo apt update
+        sudo apt install mosquitto mosquitto-clients
+        ```
 
 2. Run the Mosquitto broker:
     - Open a terminal. 
-    - Navigate to the folder where mosquitto ist installed.
+    - Navigate to the folder where mosquitto is installed.
     - Run the Mosquitto broker with the following command:
         ```
         mosquitto -v
@@ -113,7 +127,3 @@ Make sure that Ubuntu 24 is running on your computer.
         ```
     
     - If successful, you should see the message "Hello, World!" appear in the subscriber terminal.
-
-## Next Steps
-
-Now your environment is set up correctly and you can run the [Motion Control Simulation](#motion-control-simulation) and the [Fleet Management Simulation](#fleet-management-simulation).
