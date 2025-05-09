@@ -34,7 +34,7 @@ The practical part of this course is organized into two main folders: `fleet_man
 
 ## Getting Started (not relevant if you are using an IFL USB stick or laptop - everything is already set up here)
 
-Make sure that Ubuntu 20 is running on your computer.
+Make sure that Ubuntu 24 is running on your computer.
 
 ### IMRL Workspace
 
