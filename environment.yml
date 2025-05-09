@@ -1,0 +1,10 @@
+name: imrl_env
+channels:
+  - defaults
+dependencies:
+  - jsonschema=4.23.0
+  - pip=24.2
+  - python=3.12.0
+  - pip:
+      - paho-mqtt==2.1.0
+      - pygame==2.6.1
