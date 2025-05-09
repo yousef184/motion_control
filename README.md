@@ -38,7 +38,7 @@ Make sure that Ubuntu 20 is running on your computer.
 
 ### IMRL Workspace
 
-1. Download the `imrl_workspace` from !!!!!!!!!!!!!!! [bwSync&Share]().
+1. Download the `imrl_workspace` from [bwSync&Share](https://bwsyncandshare.kit.edu/s/8TnLtjMkWFNkLMX).
 2. Unzip the `imrl_workspace` at the desired location on your computer.
 
 ### Visual Studio Code
