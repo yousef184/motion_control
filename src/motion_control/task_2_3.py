@@ -1,6 +1,6 @@
 '''
 This script is an example code to be used for individual task 2 and 3. 
-The basic structure for mqtt is provided, but the students need to implement the missing parts.
+The basic structure is provided, but the students need to implement the missing parts.
 '''
 
 import json
