@@ -60,6 +60,10 @@ class MQTTPublisher:
                     schema = json.load(schema_file)
                 self.validate_json(message, schema, topic='State')
             
+            elif topic == 'tasks':
+                # No validation for tasks message, as it is a custom message.
+                pass
+
             else:
                 self.logging.error(f"Topic {self.topic} is not supported.")
                 return
@@ -70,7 +74,10 @@ class MQTTPublisher:
 
             # Log the status of the message.
             if status == 0:
-                self.logging.info(f"Client {self.client_id} send message `{message}` to topic `{self.topic}`.")  # `{message}`
+                if topic == 'tasks':
+                    self.logging.debug(f"Client {self.client_id} send message `{message}` to topic `{self.topic}`.")
+                else:
+                    self.logging.info(f"Client {self.client_id} send message `{message}` to topic `{self.topic}`.")  # `{message}`
             else:
                 self.logging.error(f"Client {self.client_id} failed to send message to topic {self.topic}.")
         else:

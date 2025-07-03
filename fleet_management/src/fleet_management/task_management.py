@@ -1,5 +1,6 @@
 import time
 import threading
+from vda5050_interface.mqtt_clients.mqtt_publisher import MQTTPublisher
 
 
 class TaskManagement:
@@ -20,6 +21,8 @@ class TaskManagement:
         self.agents = agents
         self.transportation_tasks_data = transportation_tasks_data
         self.task_list = self.get_task_list()
+        self.mqtt_publisher = MQTTPublisher(config_data=agents.config_data, channel="uagv/v2/KIT/tasks",
+                                            client_id=f'tasks_publisher', logging=agents.logging)
         self.check_completion_thread = threading.Thread(target=self.check_tasks_completion)
 
     def get_task_list(self) -> list:
@@ -34,7 +37,8 @@ class TaskManagement:
                          'startStationId': task['startStationId'],
                          'goalStationId': task['goalStationId'],
                          'task_assigned': False,
-                         'task_completed': False}
+                         'task_completed': False,
+                         'agent_id': None}
             task_list.append(task_dict)
         return task_list
 
@@ -58,7 +62,11 @@ class TaskManagement:
                 if agent.agent_state != "IDLE":
                     task_completed = False
                     break
+            
+            # Publish the task list to the MQTT broker.
+            self.mqtt_publisher.publish(self.task_list, qos=0)
 
+            # If all tasks are completed, stop the simulation.
             if task_completed:
                 self.agents.logging.info(f"All tasks are completed at time {round(time.time() - self.simulation_start_time, 2)}.")
                 running = False
