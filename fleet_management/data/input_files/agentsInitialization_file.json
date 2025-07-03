@@ -3,9 +3,9 @@
     "agents": [
         {
             "agentId": "mouse001",
-            "stateTopic": "IMRL/fleet_management/mouse001/state",
-            "orderTopic": "IMRL/fleet_management/mouse001/order",
-            "visualizationTopic": "IMRL/fleet_management/mouse001/visualization",
+            "stateTopic": "uagv/v2/KIT/mouse001/state",
+            "orderTopic": "uagv/v2/KIT/mouse001/order",
+            "visualizationTopic": "uagv/v2/KIT/mouse001/visualization",
             "agentPosition": {
                 "x": 1.875,
                 "y": 1.875,
