@@ -2,10 +2,10 @@
     "mapId": "Map_1",
     "agents": [
         {
-            "agentId": "1",
-            "stateTopic": "IMRL/fleet_management/agent_1/state",
-            "orderTopic": "IMRL/fleet_management/agent_1/order",
-            "visualizationTopic": "IMRL/fleet_management/agent_1/visualization",
+            "agentId": "mouse001",
+            "stateTopic": "IMRL/fleet_management/mouse001/state",
+            "orderTopic": "IMRL/fleet_management/mouse001/order",
+            "visualizationTopic": "IMRL/fleet_management/mouse001/visualization",
             "agentPosition": {
                 "x": 1.875,
                 "y": 1.875,
