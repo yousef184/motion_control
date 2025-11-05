@@ -2,10 +2,10 @@
     "mapId": "Map_1",
     "agents": [
         {
-            "agentId": "mouse001",
-            "stateTopic": "uagv/v2/KIT/mouse001/state",
-            "orderTopic": "uagv/v2/KIT/mouse001/order",
-            "visualizationTopic": "uagv/v2/KIT/mouse001/visualization",
+            "agentId": "1",
+            "stateTopic": "uagv/v2/KIT/1/state",
+            "orderTopic": "uagv/v2/KIT/1/order",
+            "visualizationTopic": "uagv/v2/KIT/1/visualization",
             "agentPosition": {
                 "x": 1.875,
                 "y": 1.875,

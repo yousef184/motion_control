@@ -1,8 +1,12 @@
 import json
-from jsonschema import validate, ValidationError
+from jsonschema import validate, ValidationError, Draft7Validator
 from paho.mqtt import client as mqtt_client
 
 class MQTTPublisher:
+    # Class-level cache for schemas and validators
+    _schema_cache = {}
+    _validator_cache = {}
+    
     def __init__(self, config_data, channel, client_id, logging) -> None:
         """
         Initialize the MQTT publisher.
@@ -19,8 +23,52 @@ class MQTTPublisher:
         self.logging = logging
         self.client = mqtt_client.Client()
         self.client.on_connect = self.on_connect
+        
+        # Pre-load and cache validators for this topic
+        self._ensure_validator_cached(self.topic.split('/')[-1])
+        
         self.client.connect(self.broker, self.port)
         self.client.loop_start()
+    
+    @classmethod
+    def _load_schema(cls, schema_path):
+        """
+        Load and cache a JSON schema.
+        
+        :param schema_path: Path to the schema file.
+        :return: The loaded schema.
+        """
+        if schema_path not in cls._schema_cache:
+            with open(schema_path, "r", encoding="utf-8") as schema_file:
+                cls._schema_cache[schema_path] = json.load(schema_file)
+        return cls._schema_cache[schema_path]
+    
+    @classmethod
+    def _get_validator(cls, schema_path):
+        """
+        Get or create a cached validator for a schema.
+        
+        :param schema_path: Path to the schema file.
+        :return: A Draft7Validator instance.
+        """
+        if schema_path not in cls._validator_cache:
+            schema = cls._load_schema(schema_path)
+            cls._validator_cache[schema_path] = Draft7Validator(schema)
+        return cls._validator_cache[schema_path]
+    
+    def _ensure_validator_cached(self, topic):
+        """
+        Pre-load validator for the given topic.
+        
+        :param topic: The topic name.
+        """
+        schema_map = {
+            'order': "src/vda5050_interface/json_schemas/order.schema",
+            'state': "src/vda5050_interface/json_schemas/state.schema",
+        }
+        
+        if topic in schema_map:
+            self._get_validator(schema_map[topic])
 
     def on_connect(self, client, userdata, flags, rc) -> None:
         """
@@ -45,25 +93,20 @@ class MQTTPublisher:
         """
         if self.client is not None:
             topic = self.topic.split('/')[-1]
-            # Validate the message based on the topic.
-            if topic == 'order':
-                # Valdate the order message based on the order message schema from the VDA5050 standard.
-                schema_path = "src/vda5050_interface/json_schemas/order.schema"
-                with open(schema_path, "r") as schema_file:
-                    schema = json.load(schema_file)
-                self.validate_json(message, schema, topic='Order')
-
-            elif topic == 'state':
-                # Valdate the state message based on the state message schema from the VDA5050 standard.
-                schema_path = "src/vda5050_interface/json_schemas/state.schema"
-                with open(schema_path, "r", encoding="utf-8") as schema_file:
-                    schema = json.load(schema_file)
-                self.validate_json(message, schema, topic='State')
             
+            # Validate the message based on the topic using cached validators
+            schema_map = {
+                'order': ("src/vda5050_interface/json_schemas/order.schema", 'Order'),
+                'state': ("src/vda5050_interface/json_schemas/state.schema", 'State'),
+            }
+            
+            if topic in schema_map:
+                schema_path, topic_name = schema_map[topic]
+                validator = self._get_validator(schema_path)
+                self.validate_json_cached(message, validator, topic=topic_name)
             elif topic == 'tasks':
                 # No validation for tasks message, as it is a custom message.
                 pass
-
             else:
                 self.logging.error(f"Topic {self.topic} is not supported.")
                 return
@@ -83,9 +126,25 @@ class MQTTPublisher:
         else:
             raise RuntimeError("Publish was called, before client was initialized.")
 
+    def validate_json_cached(self, message, validator, topic) -> None:
+        """
+        Validate the message JSON using a cached validator.
+
+        :param message: The message to validate.
+        :param validator: The cached Draft7Validator instance.
+        :param topic: The topic of the message.
+        :raises ValidationError: If the message data does not conform to the schema.
+        """
+        try:
+            validator.validate(message)
+            self.logging.info(f"{topic} message is valid.")
+        except ValidationError as e:
+            self.logging.error(f"{topic} message validation failed: {e.message}")
+            raise
+    
     def validate_json(self, message, schema, topic) -> None:
         """
-        Validate the message json based on the schema.
+        Validate the message json based on the schema (legacy method for compatibility).
 
         :param message: The message.
         :param schema: The schema of the message.
