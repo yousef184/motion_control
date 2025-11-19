@@ -307,88 +307,56 @@
                     "interactionNodeIds": [
                         "N1"
                     ],
-                    "stationPosition": {
-                        "x": 0.625,
-                        "y": 1.875
-                    },
-                    "stationType": "PRODUCTION"
+                    "stationDescription": "TRANSFER"
                 },
                 {
                     "stationId": "S2",
                     "interactionNodeIds": [
                         "N2"
                     ],
-                    "stationPosition": {
-                        "x": 0.625,
-                        "y": 3.125
-                    },
-                    "stationType": "PRODUCTION"
+                    "stationDescription": "TRANSFER"
                 },
                 {
                     "stationId": "S3",
                     "interactionNodeIds": [
                         "N7"
                     ],
-                    "stationPosition": {
-                        "x": 5.125,
-                        "y": 1.875
-                    },
-                    "stationType": "PRODUCTION"
+                    "stationDescription": "TRANSFER"
                 },
                 {
                     "stationId": "S4",
                     "interactionNodeIds": [
                         "N8"
                     ],
-                    "stationPosition": {
-                        "x": 5.125,
-                        "y": 3.125
-                    },
-                    "stationType": "PRODUCTION"
+                    "stationDescription": "TRANSFER"
                 },
                 {
                     "stationId":"C1",
                     "interactionNodeIds":[
                         "N9"
                     ],
-                    "stationPosition": {
-                        "x": 1.875,
-                        "y": 0.625
-                    },
-                    "stationType": "CHARGING"
+                    "stationDescription": "CHARGING"
                 },
                 {
                     "stationId":"C2",
                     "interactionNodeIds":[
                         "N10"
                     ],
-                    "stationPosition": {
-                        "x": 1.875,
-                        "y": 4.375
-                    },
-                    "stationType": "CHARGING"
+                    "stationDescription": "CHARGING"
                 },
                 {
                     "stationId":"C3",
                     "interactionNodeIds":[
                         "N11"
                     ],
-                    "stationPosition": {
-                        "x": 3.875,
-                        "y": 0.625
-                    },
-                    "stationType": "CHARGING"
+                    "stationDescription": "CHARGING"
                 },
                 {
                     "stationId":"C4",
                     "interactionNodeIds":[
                         "N12"
                     ],
-                    "stationPosition": {
-                        "x": 3.875,
-                        "y": 4.375
-                    },
-                    "stationType": "CHARGING"
+                    "stationDescription": "CHARGING"
                 }
             ]
         }
