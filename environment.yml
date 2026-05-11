@@ -8,3 +8,4 @@ dependencies:
   - pip:
       - paho-mqtt==2.1.0
       - pygame==2.6.1
+      - pytest==9.0.3

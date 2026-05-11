@@ -1,6 +1,9 @@
 import json
+import os
 from jsonschema import validate, ValidationError, Draft7Validator
 from paho.mqtt import client as mqtt_client
+
+_SCHEMAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "json_schemas")
 
 class MQTTPublisher:
     # Class-level cache for schemas and validators
@@ -63,8 +66,8 @@ class MQTTPublisher:
         :param topic: The topic name.
         """
         schema_map = {
-            'order': "src/vda5050_interface/json_schemas/order.schema",
-            'state': "src/vda5050_interface/json_schemas/state.schema",
+            'order': os.path.join(_SCHEMAS_DIR, "order.schema"),
+            'state': os.path.join(_SCHEMAS_DIR, "state.schema"),
         }
         
         if topic in schema_map:
@@ -96,8 +99,8 @@ class MQTTPublisher:
             
             # Validate the message based on the topic using cached validators
             schema_map = {
-                'order': ("src/vda5050_interface/json_schemas/order.schema", 'Order'),
-                'state': ("src/vda5050_interface/json_schemas/state.schema", 'State'),
+                'order': (os.path.join(_SCHEMAS_DIR, "order.schema"), 'Order'),
+                'state': (os.path.join(_SCHEMAS_DIR, "state.schema"), 'State'),
             }
             
             if topic in schema_map:

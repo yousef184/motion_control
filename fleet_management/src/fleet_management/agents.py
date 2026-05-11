@@ -1,5 +1,3 @@
-# Import necessary libraries and modules.
-import math
 import json
 from vda5050_interface.mqtt_clients.mqtt_subscriber import MQTTSubscriber
 from vda5050_interface.interfaces.order_interface import OrderInterface
@@ -7,18 +5,12 @@ from vda5050_interface.interfaces.order_interface import OrderInterface
 
 class Agents:
     """
-    Class representing the digital twins of the agents controlled by the fleet manager.
+    Container for all digital-twin agent objects.
+    Creates one Agent per entry in agentsInitialization_file.json.
     """
-    def __init__(self, config_data, graph, agents_initialization_data, logging, simulation_start_time) -> None:
-        """
-        Initialize the Agents object.
 
-        :param config_data: The data from the configuration file.
-        :param graph: The graph object based on which the agents are controlled by the fleet manager.
-        :param agents_initialization_data: The data from the agents initialization file.
-        :param logging: The logging object.
-        :param simulation_start_time: The start time of the simulation.
-        """
+    def __init__(self, config_data, graph, agents_initialization_data, logging,
+                 simulation_start_time) -> None:
         self.simulation_start_time = simulation_start_time
         self.logging = logging
         self.config_data = config_data
@@ -28,62 +20,95 @@ class Agents:
 
     def get_agents(self, agents_initialization_data) -> list:
         """
-        Create the digital twins of the agents based on the data from the agents initialization file.
-        
-        :param agents_initialization_data: The data from the agents initialization file.
-        :return: A list of digital twin agent objects.
+        Create the Agent objects from agentsInitialization_file.json.
+
+        The mock below creates a single agent with minimal attributes.
+        Extend the Agent constructor call to pass any additional attributes
+        that your implementation requires (e.g. current node, velocity, current task).
+
+        Hint: agents_initialization_data['agents'] is a list.
+              Each entry contains 'agentId', 'stateTopic', 'orderTopic',
+              'agentPosition' (x, y, theta), 'agentVelocity', etc.
         """
-        # TODO: Implement the method to create objects of the agents based on the data from the agents initialization file. Also define additional required attributes.
-        agents = [Agent(agents=self, agentId=agents_initialization_data['agents'][0]['agentId'], agent_state='IDLE',
-                        agent_order_topic=agents_initialization_data['agents'][0]['orderTopic'],
-                        agent_state_topic=agents_initialization_data['agents'][0]['stateTopic'],
-                        logging=self.logging)]
+        # TODO Task 5: Extend this to pass all attributes your Agent class needs.
+        # You may also add any additional attributes to the Agent constructor as needed
+        # in the folowing tasks.
+        agents = [Agent(
+            agents=self,
+            agentId=agents_initialization_data['agents'][0]['agentId'],
+            agent_state='IDLE',
+            agent_order_topic=agents_initialization_data['agents'][0]['orderTopic'],
+            agent_state_topic=agents_initialization_data['agents'][0]['stateTopic'],
+            logging=self.logging
+        )]
         return agents
 
 
 class Agent:
     """
-    Class representing a digital twin of an agent.
+    Digital twin of one simulated mobile robot.
+
+    Attributes updated here must mirror the real robot's state as reported
+    via VDA 5050 state messages (received in state_callback).
     """
-    def __init__(self, agents, agentId, agent_state_topic, agent_order_topic, agent_state, logging) -> None:
-        """
-        Initialize the digital twin agent object.
 
-        :param agents: The agents object containing the digital twin agents.
-        :param agentId: The ID of the agent.
-        :param agent_state: The state of the agent.
-        :param agent_order_topic: The MQTT topic for the order messages of the agent.
-        :param agent_state_topic: The MQTT topic for the state messages of the agent.
-        :param logging: Logging object.
-        """
-        # TODO: Define required attributes of the agent to describe its state and behavior.
-
-        self.agents = agents
+    def __init__(self, agents, agentId, agent_state_topic, agent_order_topic,
+                 agent_state, logging) -> None:
+        # ── Core references ───────────────────────────────────────────────────
+        self.agents = agents          # parent Agents container
         self.agentId = agentId
-        self.agent_state = agent_state
-        self.agvPosition = {}
-        self.safetyState = {}
-        self.loaded = False
+
+        # ── Communication ─────────────────────────────────────────────────────
         self.state_topic = agent_state_topic
         self.order_topic = agent_order_topic
         self.logging = logging
-        self.mqtt_subscriber_state = MQTTSubscriber(config_data=self.agents.config_data, logging=self.logging, on_message=self.state_callback,
-                                                    channel=self.state_topic, client_id=f'state_subscriber_agent_{self.agentId}')
-        self.order_interface = OrderInterface(config_data=self.agents.config_data, logging=logging,
-                                              order_topic=self.order_topic, agentId=self.agentId)
-        self.moved_distance = 0
-    
+        self.mqtt_subscriber_state = MQTTSubscriber(
+            config_data=self.agents.config_data, logging=self.logging,
+            on_message=self.state_callback, channel=self.state_topic,
+            client_id=f'state_subscriber_agent_{self.agentId}')
+        self.order_interface = OrderInterface(
+            config_data=self.agents.config_data, logging=logging,
+            order_topic=self.order_topic, agentId=self.agentId)
+
+        # ── State (updated by state_callback) ────────────────────────────────
+        self.agent_state = agent_state   # 'IDLE' | 'EXECUTING'
+        self.agvPosition = {}            # last known position from state message
+        self.safetyState = {}
+
+        # ── Task & path ───────────────────────────────────────────────────────
+        self.loaded = False              # True while carrying a load
+
+        # TODO Task 5: Add any additional attributes needed for your implementation.
+        #
+        # Examples (not exhaustive — choose what your implementation requires):
+        #   self.current_node  = None   # current node ID (needed by A* in Task 6)
+        #   self.current_task  = None   # task dict from task_management.task_list
+
     def state_callback(self, client, userdata, msg) -> None:
         """
-        Callback function for the MQTT message.
+        Called automatically whenever the simulation publishes a state message.
 
-        :param client: MQTT client.
-        :param userdata: User data.
-        :param msg: Message.
+        Parse the incoming state message and update the agent's attributes.
+
+        The message payload is a JSON-encoded VDA 5050 state message.
+        See data/input_files/stateMessage_Example.json for the full structure.
+
+        Required steps:
+          1. Decode and parse the JSON payload.
+          2. Update self.agvPosition from state_msg['agvPosition'].
+          3. Update self.current_node from state_msg['lastNodeId']  (Task 5 attribute).
+          4. Detect task completion:
+               - When state_msg['nodeStates'] AND state_msg['edgeStates'] are empty
+                 AND all actions in state_msg['actionStates'] have 'actionStatus' == 'FINISHED',
+                 the robot has finished its current order.
+               - Set the current task's 'task_completed' = True in
+                 self.agents.agents[0].agents.task_management.task_list  (or via reference).
+               - Set self.agent_state = 'IDLE'.
+
+        Hint: use json.loads(msg.payload.decode()) to parse the message.
         """
-        self.logging.info(f"Client {self.mqtt_subscriber_state.client_id} received message from topic `{msg.topic}`.")  # `{msg.payload.decode()}`
+        self.logging.info(
+            f"Client {self.mqtt_subscriber_state.client_id} received message "
+            f"`{msg.payload.decode()}` from topic `{msg.topic}`.")
 
-        # TODO: Read out the state message automatically and use it to update the agent state.
-
-        # TODO: Calculate the moved distance and log it to evaluate the path of the agent.
-        # self.logging.info(f"Agent {self.agentId} has moved {round(self.moved_distance, 4)} meters.")
+        # TODO Task 7: Parse the state message and update agent attributes.

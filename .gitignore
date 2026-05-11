@@ -1,7 +1,35 @@
-fleet_management/src/__pycache__/
-fleet_management/src/fleet_management/__pycache__/
-fleet_management/src/mobile_robot_simulation/__pycache__/
-fleet_management/src/vda5050_interface/interfaces/__pycache__/
-fleet_management/src/vda5050_interface//json/__pycache__/
-fleet_management/src/vda5050_interface/mqtt_clients/__pycache__/
-fleet_management/data/output_files/frames/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# IDE / editor
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Output / generated files
+fleet_management/data/output_files/
+motion_control/data/output_files/

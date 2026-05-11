@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "fleet_management/src"
+    ]
+}

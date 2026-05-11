@@ -2,17 +2,19 @@
     "mapId": "Map_1",
     "agents": [
         {
-            "agentId": "1",
-            "stateTopic": "uagv/v2/KIT/1/state",
-            "orderTopic": "uagv/v2/KIT/1/order",
-            "visualizationTopic": "uagv/v2/KIT/1/visualization",
+            "agentId": "mouse001",
+            "vehicleTypeId": "Longitudinal_Conveyor",
+            "stateTopic": "KIT/IMRL/mouse001/state",
+            "orderTopic": "KIT/IMRL/mouse001/order",
+            "visualizationTopic": "KIT/IMRL/mouse001/visualization",
             "agentPosition": {
-                "x": 1.875,
-                "y": 1.875,
-                "theta": 3.141592653589793
+                "x": 1.05,
+                "y": 0.90,
+                "theta": 1.57
             },
-            "agentVelocity": 1.0,
-            "agentRotationVelocity": 3.0
+            "agentVelocity": 1.5,
+            "agentRotationVelocity": 3,
+            "agentPositiveDirectionPreffered": true
         }
     ]
 }

@@ -1,54 +1,48 @@
 {
     "transportationTasks": [
         {
-			"transportationTaskId": "T1",
-            "startStationId": "S1",
-            "goalStationId": "S2"
+            "transportationTaskId": "T1",
+            "stations": [
+                {"nodeId": "N2", "actionType": "pick"},
+                {"nodeId": "N3", "actionType": "process", "processingTime": 1.0},
+                {"nodeId": "N4", "actionType": "drop"}
+            ]
         },
         {
-			"transportationTaskId": "T2",
-            "startStationId": "S4",
-            "goalStationId": "S1"
+            "transportationTaskId": "T2",
+            "stations": [
+                {"nodeId": "N4", "actionType": "pick"},
+                {"nodeId": "N3", "actionType": "process", "processingTime": 2.0},
+                {"nodeId": "N1", "actionType": "process", "processingTime": 1.0},
+                {"nodeId": "N2", "actionType": "drop"}
+            ]
         },
         {
             "transportationTaskId": "T3",
-            "startStationId": "S1",
-            "goalStationId": "S3"
+            "stations": [
+                {"nodeId": "N2", "actionType": "pick"},
+                {"nodeId": "N1", "actionType": "process", "processingTime": 2.0},
+                {"nodeId": "N3", "actionType": "process", "processingTime": 1.0},
+                {"nodeId": "N1", "actionType": "process", "processingTime": 2.0},
+                {"nodeId": "N2", "actionType": "drop"}
+            ]
         },
         {
             "transportationTaskId": "T4",
-            "startStationId": "S1",
-            "goalStationId": "S3"
+            "stations": [
+                {"nodeId": "N4", "actionType": "pick"},
+                {"nodeId": "N3", "actionType": "process", "processingTime": 2.0},
+                {"nodeId": "N1", "actionType": "process", "processingTime": 1.0},
+                {"nodeId": "N2", "actionType": "drop"}
+            ]
         },
         {
             "transportationTaskId": "T5",
-            "startStationId": "S2",
-            "goalStationId": "S1"
-        },
-        {
-            "transportationTaskId": "T6",
-            "startStationId": "S4",
-            "goalStationId": "S1"
-        },
-        {
-            "transportationTaskId": "T7",
-            "startStationId": "S2",
-            "goalStationId": "S3"
-        },
-        {
-            "transportationTaskId": "T8",
-            "startStationId": "S3",
-            "goalStationId": "S4"
-        },
-        {
-            "transportationTaskId": "T9",
-            "startStationId": "S4",
-            "goalStationId": "S1"
-        },
-        {
-            "transportationTaskId": "T10",
-            "startStationId": "S2",
-            "goalStationId": "S4"
+            "stations": [
+                {"nodeId": "N2", "actionType": "pick"},
+                {"nodeId": "N4", "actionType": "drop"}
+            ]
         }
     ]
 }
+
