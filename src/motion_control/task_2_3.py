@@ -4,10 +4,22 @@ The basic structure is provided, but the students need to implement the missing 
 '''
 
 import json
+import os
 import time
 import argparse
 from datetime import datetime
 import paho.mqtt.client as mqtt
+from jsonschema import validate, ValidationError
+
+_STATE_SCHEMA_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "interface", "state.schema"
+)
+
+def _load_state_schema():
+    with open(os.path.normpath(_STATE_SCHEMA_PATH), "r", encoding="utf-8") as f:
+        return json.load(f)
+
+_STATE_SCHEMA = _load_state_schema()
 
 class Robot:
     def __init__(self, name):
@@ -92,6 +104,10 @@ def follow_trajectory(robot: Robot):
 
 def send_status_update(client, topic, robot: Robot):
     status = robot.build_status_message()
+    try:
+        validate(instance=status, schema=_STATE_SCHEMA)
+    except ValidationError as e:
+        print(f"[STATE VALIDATION ERROR] {e.message} (path: {list(e.path)})")
     client.publish(topic, json.dumps(status))
 
 def main(robot_name):
