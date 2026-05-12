@@ -113,10 +113,10 @@ def send_status_update(client, topic, robot: Robot):
 def main(robot_name):
     robot = Robot(robot_name)
 
-    topic_cmd = f"uagv/v2/KIT/{robot_name}/cmd"
-    topic_pose = f"uagv/v2/KIT/{robot_name}/pose"
-    topic_order = f"uagv/v2/KIT/{robot_name}/order"
-    topic_state = f"uagv/v2/KIT/{robot_name}/state"
+    topic_cmd = f"KIT/IMRL/{robot_name}/cmd"
+    topic_pose = f"KIT/IMRL/{robot_name}/pose"
+    topic_order = f"KIT/IMRL/{robot_name}/order"
+    topic_state = f"KIT/IMRL/{robot_name}/state"
 
     def on_connect(client, userdata, flags, rc): # Called when the client connects to the broker
         client.subscribe(topic_pose)

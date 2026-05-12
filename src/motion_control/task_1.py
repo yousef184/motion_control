@@ -39,7 +39,7 @@ def on_message(client, userdata, msg):
 
 def main():
     robot_name = "mouse001"
-    topic_order = f"uagv/v2/KIT/{robot_name}/order"
+    topic_order = f"KIT/IMRL/{robot_name}/order"
 
     robot = Robot(robot_name)
 

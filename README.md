@@ -1,13 +1,15 @@
 # Motion Control Simulation
 
-Design and implement algorithms to plan and control the motion of a mobile robot to execute orders from a management system, including handling of realistic conditions (noise, dynamic constraints).
+Your task is to design and implement algorithms for planning and controlling the motion of a mobile robot and conveyors to fulfill orders from a management system, while considering realistic conditions such as noise and dynamic constraints.
+
+In the simulation, you will develop a controller to realize the most fundamental function — moving to a desired goal. All other functions, including handling safety states, docking, and controlling conveyor belts for cargo transportation, will be practiced directly on our real mobile robots.
 
 ---
 
 ## How to Run
 
 1. Open `run_motion_control_simulation.py` in the `imrl_workspace/motion_control/` directory.
-2. Set the desired task number in that file (default: `1`, available: `1`–`7`):
+2. Set the desired task number in that file (default: `1`, available: `1`–`3`):
    ```python
    args = ["--task", "1", ...]
    ```
@@ -15,7 +17,7 @@ Design and implement algorithms to plan and control the motion of a mobile robot
    ```bash
    python run_motion_control_simulation.py
    ```
-4. The simulation window opens and an order is published. The route is visualized as a green path; unreleased nodes/edges appear in dark gray.
+4. The simulation window opens and an order is published. The released part of the route is visualized as a green path; unreleased nodes/edges appear in dark gray.
 
 > **Tip:** Only one script can be executed with the VS Code run button. To run a second script simultaneously (e.g., your control script), use VS Code's "Run and Debug" feature or a separate terminal:
 > ```bash
@@ -32,20 +34,21 @@ motion_control/
 ├── data/
 │   ├── interface/
 │   │   └── order.schema               VDA 5050 order message JSON schema
+│   │   ├── state.schema               VDA 5050 state message JSON schema
 │   ├── map1/                          Map used for Tasks 1–4
 │   │   ├── LIF.json                   Layout Interchange Format — graph definition
 │   │   ├── order_msg.json             Initial order message
 │   │   ├── updated_order_msg.json     Second (unreleased) part of the order
 │   │   └── static_map.json            Static obstacle map
-│   ├── map5/                          Map used for Task 5
-│   ├── map6/                          Map used for Task 6
-│   ├── map7/                          Map used for Task 7
-│   └── map_ifl/                       IFL lab map
+│   ├── map5/                          (currently not necessary)
+│   ├── map6/                          (currently not necessary)
+│   ├── map7/                          (currently not necessary)
+│   └── map_ifl/                       (currently not necessary)
 └── src/
     └── motion_control/
         ├── task_1.py                  Task 1 — parse the order (starter code)
         ├── task_2_3.py                Tasks 2 & 3 — execute the order / handle noise (starter code)
-        └── keyboard_control_commented.py  Manual keyboard control for testing
+        └── keyboard_control_commented.py (currently not necessary) 
 ```
 
 ---
@@ -54,10 +57,10 @@ motion_control/
 
 | Topic | Direction | Content |
 |-------|-----------|---------|
-| `uagv/v2/KIT/mouse001/order` | Simulation → Your Code | VDA 5050 order message |
-| `uagv/v2/KIT/mouse001/pose`  | Simulation → Your Code | Current robot pose |
-| `uagv/v2/KIT/mouse001/cmd`   | Your Code → Simulation | Velocity commands |
-| `uagv/v2/KIT/mouse001/state` | Your Code → Simulation | VDA 5050 state message |
+| `KIT/IMRL/mouse001/order` | Simulation → Your Code | VDA 5050 order message |
+| `KIT/IMRL/mouse001/pose`  | Simulation → Your Code | Current robot pose |
+| `KIT/IMRL/mouse001/cmd`   | Your Code → Simulation | Velocity commands |
+| `KIT/IMRL/mouse001/state` | Your Code → Simulation | VDA 5050 state message |
 
 Example messages for all topics can be found in `imrl_workspace/json_examples/`.
 
@@ -88,18 +91,14 @@ git checkout -b task/task-2
 
 ## Tasks
 
-> **Minimum requirement for the individual work:** Complete **Tasks 1 – 3** (Milestone 1).
+> **Minimum requirement for the individual work:** Complete **Tasks 0 – 3** (Milestone 1).
 
 ### Task 0 — Test the Simulation Environment (no implementation)
 
 Before starting the individual tasks, verify that the simulation works.
 
 1. Follow the "How to Run" section above to start the simulation.
-2. In a second terminal, run the keyboard control script:
-   ```bash
-   python src/motion_control/keyboard_control_commented.py
-   ```
-3. Use the **arrow keys** to drive the robot. Make sure the keyboard control window is focused — otherwise key presses are not captured.
+2. Use the **arrow keys** to drive the robot. Make sure the simulation window is activated — otherwise key presses are not captured.
 4. The robot's trajectory is shown in red. If the robot moves, your environment is ready.
 
 ---
@@ -110,9 +109,9 @@ Before starting the individual tasks, verify that the simulation works.
 
 Parse the necessary information from the VDA 5050 order message and convert it into a **route** (an ordered list of waypoints).
 
-- Orders are published on `uagv/v2/KIT/mouse001/order`.
+- Orders are published on `KIT/IMRL/mouse001/order`.
 - Only **released** nodes and edges (`"released": true`) should be included in the route.
-- Released nodes/edges are visualized in green; unreleased ones in dark gray.
+- Released nodes and edges are visualized in green; unreleased ones in dark gray.
 
 **Steps to implement in `Robot.receive_order()`:**
 1. Decode the JSON payload.
@@ -125,18 +124,18 @@ Parse the necessary information from the VDA 5050 order message and convert it i
 ---
 
 ### Task 2 — Execute the Order
-
+**remember to set the correct task in run_motion_control_simulation.py**
 **File:** `src/motion_control/task_2_3.py`
 
 Control the robot to drive along the extracted route, waypoint by waypoint.
 
-- The robot's pose (without noise) is published on `uagv/v2/KIT/mouse001/pose`.
-- Velocity commands must be published to `uagv/v2/KIT/mouse001/cmd`.
-- The robot must **rotate at nodes** before driving to the next waypoint (straight-line segments between nodes).
+- The robot's pose (without noise) is published on `KIT/IMRL/mouse001/pose`.
+- Velocity commands must be published to `KIT/IMRL/mouse001/cmd`.
+- Make sure the robot will drive through all released nodes.
 - Only the released route may be executed.
 
 **State reporting (required to unlock the second part of the order):**
-- Build and publish a VDA 5050-compliant state message to `uagv/v2/KIT/mouse001/state`.
+- Build and publish a VDA 5050-compliant state message to `KIT/IMRL/mouse001/state`.
 - The simulation releases the second part of the order only after receiving a correct state message.
 - An example state message is in `imrl_workspace/json_examples/stateMessage_Example.json`.
 
@@ -156,8 +155,8 @@ Control the robot to drive along the extracted route, waypoint by waypoint.
 
 Adapt the controller from Task 2 to handle realistic conditions:
 
-- **Pose noise:** Gaussian noise is added to the position and heading received on the pose topic.
-- **Dynamic constraints:** The robot's acceleration and deceleration are limited — abrupt velocity changes are not possible.
+- **Execution noise and delay:** Gaussian noise is introduced to simulate imperfect robot execution, meaning that the robot may not follow commands exactly and command execution may be delayed.
+- **Dynamic constraints:** The robot's acceleration, deceleration, and maximum velocity are limited — abrupt velocity changes are not possible.
 
 **Goal:** Minimize the deviation from the assigned route under these conditions.
 
@@ -171,7 +170,7 @@ Adapt the controller from Task 2 to handle realistic conditions:
 ## Troubleshooting
 
 - **Robot does not move:** Verify the MQTT broker (Mosquitto) is running (`mosquitto -v`) and that your control script is connected to `localhost:1883`.
-- **Keys not captured in keyboard control:** Click on the keyboard control window to give it focus before pressing arrow keys.
+- **Keys not captured in keyboard control:** Click on the simulation window to give it focus before pressing arrow keys.
 - **Simulation does not open:** Check that `run_simulation` executable has execute permission:
   ```bash
   chmod +x src/mobile_robot_simulation/dist/run_simulation
