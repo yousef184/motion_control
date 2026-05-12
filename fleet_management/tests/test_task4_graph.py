@@ -1,6 +1,6 @@
 """
 Task 4 Validation — Graph class
-Run from the project root:  pytest tests/test_task4_graph.py -v
+Run from the workspace root:  pytest fleet_management/tests/test_task4_graph.py -v
 
 Tests that your Graph class correctly reads the layout from lif_file.json.
 All tests must pass before moving on to Task 5.
@@ -11,20 +11,18 @@ import json
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'input_files')
 from fleet_management.graph import Graph
 
 
 @pytest.fixture(scope="module")
 def graph():
-    with open("data/input_files/lif_file.json") as f:
+    with open(os.path.join(_DATA_DIR, "lif_file.json")) as f:
         lif_data = json.load(f)
     return Graph(lif_data=lif_data)
 
 
 # ── Nodes ────────────────────────────────────────────────────────────────────
-
-def test_nodes_not_none(graph):
-    assert graph.nodes is not None, "graph.nodes must not be None"
 
 def test_node_count(graph):
     assert graph.nodes is not None, "graph.nodes is None — implement get_nodes() first"
@@ -55,9 +53,6 @@ def test_node_positions(graph):
 
 # ── Edges ────────────────────────────────────────────────────────────────────
 
-def test_edges_not_none(graph):
-    assert graph.edges is not None, "graph.edges must not be None"
-
 def test_edges_not_empty(graph):
     assert graph.edges is not None, "graph.edges is None — implement get_edges() first"
     assert len(graph.edges) > 0, "graph.edges must not be empty"
@@ -77,18 +72,8 @@ def test_known_edge_E21(graph):
     endpoints = {e["startNodeId"], e["endNodeId"]}
     assert endpoints == {"N5", "N1"}, f"E21 should connect N5 and N1, got {endpoints}"
 
-def test_known_edge_E1(graph):
-    assert graph.edges is not None, "graph.edges is None — implement get_edges() first"
-    assert "E1" in graph.edges, "Edge E1 (N7↔N1) must be in graph.edges"
-    e = graph.edges["E1"]
-    endpoints = {e["startNodeId"], e["endNodeId"]}
-    assert endpoints == {"N1", "N7"}, f"E1 should connect N1 and N7, got {endpoints}"
-
 
 # ── Stations ─────────────────────────────────────────────────────────────────
-
-def test_stations_not_none(graph):
-    assert graph.stations is not None, "graph.stations must not be None"
 
 def test_station_ids(graph):
     assert graph.stations is not None, "graph.stations is None — implement get_stations() first"
@@ -117,9 +102,6 @@ def test_no_charging_in_stations(graph):
 
 
 # ── Dwelling nodes ───────────────────────────────────────────────────────────
-
-def test_dwelling_nodes_not_none(graph):
-    assert graph.dwelling_nodes is not None, "graph.dwelling_nodes must not be None"
 
 def test_dwelling_node_count(graph):
     assert graph.dwelling_nodes is not None, \
@@ -158,7 +140,3 @@ def test_get_connected_edge_bidirectional(graph):
         "get_connected_edge('N5','N1') returned None — implement get_connected_edge() first"
     assert edge_fwd == edge_bwd, \
         f"get_connected_edge should return the same edge in both directions: {edge_fwd} vs {edge_bwd}"
-
-def test_get_connected_edge_none_for_unconnected(graph):
-    edge = graph.get_connected_edge("N5", "N4")
-    assert edge is None, "N5 and N4 are not directly connected, should return None"

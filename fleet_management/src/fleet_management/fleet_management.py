@@ -1,16 +1,18 @@
 import math
 import uuid
+import time
+import threading
 
 
 class FleetManagement:
     """
     Manages the fleet: computes paths and sends VDA 5050 orders to agents.
 
-    Task 6: Integrate A* into the full order pipeline (multi-stop tasks).
+    Task 7: Integrate A* into the full order pipeline (multi-stop tasks).
         Implement the helper methods build_path_for_task(), build_order_nodes(),
         and build_order_edges(), then call them from fleet_manager().
 
-    Task 9: Automate all transportation tasks.
+    Task 10: Automate all transportation tasks.
         Run fleet_manager() in a loop inside a daemon thread so tasks are
         picked up and executed one after another until all are done.
     """
@@ -57,7 +59,7 @@ class FleetManagement:
         self.graph.nodes[node_id] (if Task 4 is implemented).
         Use str(uuid.uuid4()) to generate unique actionId strings.
 
-        Task 6 — replace the manual lists with A*:
+        Task 7 — replace the manual lists with A*:
             1. Pick the first unassigned task from self.task_management.task_list.
             2. Call self.build_path_for_task(task, agent.current_node).
             3. Call self.build_order_nodes(path_nodes, task) and
@@ -65,7 +67,7 @@ class FleetManagement:
             4. Pass the results to generate_order_message() below.
             5. Mark task['task_assigned'] = True and agent.agent_state = 'EXECUTING'.
 
-        Task 9 — automate over all tasks in a thread:
+        Task 10 — automate over all tasks in a thread:
             Wrap the logic above in a while loop and run in a daemon thread:
                 import threading
                 threading.Thread(target=self.fleet_manager, daemon=True).start()
@@ -73,23 +75,20 @@ class FleetManagement:
         # TODO Task 3: Fill the two lists below manually for the first task (T1).
         #              The full journey must cover:
         #              dwelling -> [path] -> pick -> [path] -> process -> [path] -> drop -> [path] -> dwelling
-        nodes = []   # TODO Task 3: List of node dicts with nodeId, x, y, theta, actions
-        edges = []   # TODO Task 3: List of edge dicts with edgeId, startNodeId, endNodeId, actions
+        nodes = []   # List of node dicts with nodeId, x, y, theta, actions
+        edges = []   # List of edge dicts with edgeId, startNodeId, endNodeId, actions
 
-        # TODO Task 6: Replace the manual lists above with self.build_order_nodes/edges().
-
-        self.agents.agents[0].order_interface.generate_order_message(
-            agent=self.agents.agents[0],
+        agent = self.agents.agents[0]
+        agent.order_interface.generate_order_message(
+            agent=agent,
             orderId=str(self.agents.order_header_id),
             order_updateId=0,
             nodes=nodes,
             edges=edges)
 
-        # TODO Task 9: Wrap in a loop and run in a daemon thread.
-
     def build_path_for_task(self, task: dict, start_node: str) -> tuple:
         """
-        Task 6: Chain multiple A* searches to cover all stations in a task.
+        Task 7: Chain multiple A* searches to cover all stations in a task.
 
         Every task follows: dwelling -> pick -> process(es) -> drop -> dwelling
 
@@ -114,12 +113,12 @@ class FleetManagement:
 
         Returns (path_nodes, path_edges).
         """
-        # TODO Task 6: Implement multi-leg path planning.
-        return [], []
+        # TODO Task 7: Implement this method.
+        pass
 
     def build_order_nodes(self, path_nodes: list, task: dict) -> list:
         """
-        Task 6: Assign VDA 5050 actions to each node in the combined path.
+        Task 7: Assign VDA 5050 actions to each node in the combined path.
 
         Action rules (matching the dwelling -> pick -> process -> drop -> dwelling structure):
             - For stations with actionType 'pick' or 'drop' (TRANSFER):
@@ -148,22 +147,22 @@ class FleetManagement:
             if i + 1 < len(path_nodes) and path_nodes[i+1] is a TRANSFER station:
                 add init_fine_positioning to path_nodes[i]
         """
-        # TODO Task 6: Implement action assignment.
-        return []
+        # TODO Task 7: Implement this method.
+        pass
 
     def build_order_edges(self, path_nodes: list, path_edges: list) -> list:
         """
-        Task 6: Build the edges input list for generate_order_message().
+        Task 7: Build the edges input list for generate_order_message().
 
         Returns:
-            [{"edgeId": path_edges[i],
+            [{
+              "edgeId": path_edges[i],
               "startNodeId": path_nodes[i],
               "endNodeId": path_nodes[i+1],
-              "actions": []}
-             for i in range(len(path_edges))]
+              "actions": []}]
         """
-        # TODO Task 6: Build the edges list.
-        return []
+        # TODO Task 7: Implement this method.
+        pass
 
 
 class PathPlanning:
@@ -207,8 +206,8 @@ class PathPlanning:
             - Build path_edges by calling self.graph.get_connected_edge(a, b)
               for each consecutive pair in the reconstructed path_nodes.
         """
-        # TODO Task 6: Implement A* search.
-        return None, None
+        # TODO Task 6: Implement A* here.
+        pass
 
     def get_h(self, current_node: str, goal_node: str) -> float:
         """
@@ -218,8 +217,8 @@ class PathPlanning:
         then return math.dist(pos_current, pos_goal).
         This heuristic is admissible (straight-line <= actual path length).
         """
-        # TODO Task 6: Implement the heuristic.
-        return 0.0
+        # TODO Task 6: Implement this method.
+        pass
 
     def get_distance(self, start_node: str, goal_node: str) -> float:
         """
@@ -227,5 +226,5 @@ class PathPlanning:
 
         Task 6: Same formula as get_h(); used as the g-score increment per step.
         """
-        # TODO Task 6: Implement the edge cost.
-        return 0.0
+        # TODO Task 6: Implement this method.
+        pass

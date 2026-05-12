@@ -1,21 +1,22 @@
 # Fleet Management Simulation
 
 A VDA 5050-based fleet management for a mobile robotics system.
-In the individual work, students implement an A* pathfinding algorithm and a VDA 5050 communication interface
-to execute multi-stop transportation tasks automatically with one mobile robot.
 
 ---
 
 ## How to Run
 
-1. Open a terminal in the **workspace root** (`imrl_workspace/`).
-2. Run the simulation:
+1. Open a terminal in the **workspace root** (`imrl_workspace/`) and activate the conda environment:
+```bash
+conda activate imrl_env
+```
 
+2. Run the simulation:
 ```bash
 python fleet_management/run_fleet_management_simulation.py
 ```
 
-The script resolves all paths relative to its own location, so it works regardless of the working directory.
+Alternatively, open `run_fleet_management_simulation.py` in VS Code and press the **Run** button (▶) — VS Code will use the configured Python interpreter automatically.
 
 The script automatically starts the `agent_simulation`, waits for it to
 initialize (default: 6 seconds), then starts the fleet management logic.
@@ -32,35 +33,44 @@ time in `run_fleet_management_simulation.py` (the `time.sleep(6)` after
 fleet_management/
 ├── data/
 │   ├── input_files/
-│   │   ├── lif_file.json                  Layout Interchange Format — graph definition
-│   │   ├── config_file.json               MQTT broker address, simulation run time, etc.
-│   │   ├── agentsInitialization_file.json Initial robot position, velocity, topics
-│   │   ├── transportationTasks_file.json  List of transportation tasks to execute
-│   │   ├── orderMessage_Example.json       Example VDA 5050 order message (Task 2)
-│   │   └── stateMessage_Example.json       Example VDA 5050 state message (Task 7)
+│   │   ├── lif_file.json                   Layout Interchange Format — graph definition
+│   │   ├── config_file.json                MQTT broker address, simulation run time, etc.
+│   │   ├── agentsInitialization_file.json  Initial robot position, velocity, topics
+│   │   ├── transportationTasks_file.json   List of transportation tasks to execute
+│   │   ├── orderMessage_Example.json       Example VDA 5050 order message
+│   │   └── stateMessage_Example.json       Example VDA 5050 state message
 │   └── output_files/
 │       └── logging_file.log
 ├── src/
-│   ├── run_fleet_management_simulation.py Main entry point
+│   ├── run_fleet_management_simulation.py  Main entry point
 │   ├── fleet_management/
-│   │   ├── graph.py            Task 4 — Graph class (nodes, edges, stations)
-│   │   ├── agents.py           Task 5 — Agent digital twin
-│   │   ├── fleet_management.py Task 6 — PathPlanning (A*) + FleetManagement
-│   │   ├── task_management.py  Provided — task list, completion monitoring
-│   │   └── task_assignment.py  Task 8 — assigns tasks to idle agents
+│   │   ├── agents.py                       Agent digital twin (Tasks 5 & 8)
+│   │   ├── fleet_management.py             Path planning & order dispatch (Tasks 6 & 7)
+│   │   ├── graph.py                        Graph model from LIF (Task 4)
+│   │   ├── task_assignment.py              Task-to-agent assignment (Task 9)
+│   │   └── task_management.py              Loads transportation tasks from file
 │   ├── vda5050_interface/
-│   │   └── interfaces/
-│   │       └── order_interface.py  Task 3 — generate_order_message()
+│   │   ├── interfaces/
+│   │   │   └── order_interface.py          VDA 5050 order message builder (Task 3)
+│   │   ├── json_schemas/
+│   │   │   ├── order.schema
+│   │   │   ├── state.schema
+│   │   │   └── visualization.schema
+│   │   └── mqtt_clients/
+│   │       ├── mqtt_publisher.py
+│   │       └── mqtt_subscriber.py
 │   └── mobile_robot_simulation/
-│       └── dist/agent_simulation   Simulation executable (do not modify)
+│       └── dist/
+│           └── agent_simulation            Simulation executable
 └── tests/
     ├── test_task3_order_message.py
     ├── test_task4_graph.py
     ├── test_task5_agents.py
     ├── test_task6_astar.py
-    ├── test_task7_state_callback.py
-    ├── test_task8_task_assignment.py
-    └── test_task9_fleet_manager.py
+    ├── test_task7_fleet_integration.py
+    ├── test_task8_state_callback.py
+    ├── test_task9_task_assignment.py
+    └── test_task10_fleet_manager.py
 ```
 
 ---
@@ -91,7 +101,7 @@ git checkout -b task/task-4
 git add src/fleet_management/graph.py
 git commit -m "Task 4: Graph class implemented"
 
-# Continue the same pattern for Tasks 5–9
+# Continue the same pattern for Tasks 5–10
 ```
 
 This way you can always switch back to a fully working task branch:
@@ -171,17 +181,19 @@ The fleet management code is responsible for adding the travel to/from the dwell
 
 ## Tasks
 
-> **Minimum requirement for the individual work:** Complete **Tasks 1 – 5**.
+In the individual work, students implement an A* pathfinding algorithm and a VDA 5050 communication interface
+to execute multi-stop transportation tasks automatically with one mobile robot.
+
+> **Minimum requirement for the individual work: Complete Tasks 1 – 6**.
 
 ### Task 1 — Get an Overview of the Codebase. (no implementation)
 
-Study the `fleet-management-simulation` project.
+Study the `fleet_management` project.
 - Get an overview of the codebase and familiarize yourself with the structure.
 - Understand how the input files are read into the `run_fleet_management_simulation.py` file.
 - Make changes to the input files and test how the fleet management simulation works.
-  - Remark: Make copies of the original input files before making changes.   
 
-**Goal:** You are able to explain the codebase with all it's components.
+**Goal:** You are able to explain the `fleet_management` codebase with all it's components.
 
 ---
 
@@ -232,7 +244,7 @@ The resulting order message sent to the robot must be identical to the one from 
 Implement the method so that it builds and publishes a VDA 5050-compliant order
 message from whatever `nodes` and `edges` lists are passed in.
 
-**Input format (same for Task 3 manual path and Task 6 A* path):*
+Input format (same for Task 3 manual path and Task 6 A* path):
 
 ```python
 nodes = [
@@ -263,7 +275,7 @@ edges = [
 4. Publish via `self.mqtt_publisher.publish(order_msg, qos=0)`.
 5. Increment `agent.agents.order_header_id` after publishing.
 
-**Validation:** `pytest tests/test_task3_order_message.py -v`
+**Validation:** `pytest fleet_management/tests/test_task3_order_message.py -v`
 
 ---
 
@@ -292,7 +304,7 @@ Implement the four data-loading methods and two helper methods used by A*.
 - Store `vehicleTypeNodeProperties` in `get_nodes` so that `fleet_management.py` can
   look up theta values for order messages.
 
-**Validation:** `pytest tests/test_task4_graph.py -v`
+**Validation:** `pytest fleet_management/tests/test_task4_graph.py -v`
 
 ---
 
@@ -314,7 +326,9 @@ and update `get_agents()` to initialize them from `agentsInitialization_file.jso
 (not just `[0]`) to support multiple agents.
 
 **In `state_callback()`:** Update `current_node` from `state_msg['lastNodeId']`
-(see Task 7 below).
+(see Task 8 below).
+
+**Validation:** `pytest fleet_management/tests/test_task5_agents.py -v`
 
 ---
 
@@ -322,9 +336,9 @@ and update `get_agents()` to initialize them from `agentsInitialization_file.jso
 
 **File:** `src/fleet_management/fleet_management.py`
 
-Implement the A* algorithm and connect it to the order pipeline.
+Implement the three `PathPlanning` methods in `fleet_management.py`.
 
-**Step 1 — Implement `PathPlanning` methods:**
+**Methods to implement:**
 
 | Method | Description |
 |--------|-------------|
@@ -337,7 +351,18 @@ Implement the A* algorithm and connect it to the order pipeline.
 - `path_edges`: ordered list of edge IDs, e.g. `["E21", "E1", "E2"]`
   (`len(path_edges) == len(path_nodes) - 1`)
 
-**Step 2 — Implement `FleetManagement` helper methods:**
+**Validation:** `pytest fleet_management/tests/test_task6_astar.py -v`
+
+---
+
+### Task 7 — Integrate A* into the Order Pipeline
+
+**File:** `src/fleet_management/fleet_management.py`
+
+Use the A* algorithm from Task 6 to automatically plan paths for multi-stop
+transportation tasks and dispatch VDA 5050 order messages.
+
+**Methods to implement in `FleetManagement`:**
 
 | Method | Description |
 |--------|-------------|
@@ -352,8 +377,8 @@ Implement the A* algorithm and connect it to the order pipeline.
 - If a station has `actionType == 'process'` (PROCESS):
   - Station node → `process` action with `processingTime` from the task
 
-**Step 3 — Connect to `fleet_manager()`:**
-Replace the placeholder call with the dynamic pipeline:
+**Connect to `fleet_manager()`:**
+Replace the manual path lists with the dynamic pipeline:
 ```python
 task   = # first unassigned task
 agent  = # first idle agent
@@ -364,11 +389,11 @@ agent.order_interface.generate_order_message(agent, orderId=..., order_updateId=
                                               nodes=nodes, edges=edges)
 ```
 
-**Validation:** `pytest tests/test_task6_astar.py -v`
+**Validation:** `pytest fleet_management/tests/test_task7_fleet_integration.py -v`
 
 ---
 
-### Task 7 — Implement `state_callback()`
+### Task 8 — Implement `state_callback()`
 
 **File:** `src/fleet_management/agents.py`
 
@@ -385,11 +410,11 @@ Parse incoming VDA 5050 state messages and update the agent's attributes.
    - Set the current task's `'task_completed' = True`.
    - Set `self.agent_state = 'IDLE'`.
 
-**Validation:** `pytest tests/test_task7_state_callback.py -v`
+**Validation:** `pytest fleet_management/tests/test_task8_state_callback.py -v`
 
 ---
 
-### Task 8 — Implement `TaskAssignment`
+### Task 9 — Implement `TaskAssignment`
 
 **File:** `src/fleet_management/task_assignment.py`
 
@@ -409,16 +434,16 @@ the next unassigned task.
 
 Start the manager in a daemon thread (uncomment the line in `__init__`).
 
-**Validation:** `pytest tests/test_task8_task_assignment.py -v`
+**Validation:** `pytest fleet_management/tests/test_task9_task_assignment.py -v`
 
 ---
 
-### Task 9 — Full Automation
+### Task 10 — Full Automation
 
 **Files:** `src/fleet_management/fleet_management.py`,
 `src/fleet_management/task_assignment.py`
 
-Combine Tasks 6, 7, and 8 to execute all tasks automatically end-to-end.
+Combine Tasks 7, 8, and 9 to execute all tasks automatically end-to-end.
 
 **In `fleet_manager()`:**
 - Replace the single-shot call with a while loop:
@@ -431,43 +456,48 @@ Combine Tasks 6, 7, and 8 to execute all tasks automatically end-to-end.
   ```
 - Run `fleet_manager()` in a daemon thread from `__init__()`.
 
+**Validation:** `pytest fleet_management/tests/test_task10_fleet_manager.py -v`
+
 **Benchmark:** All 5 transportation tasks should complete automatically.
 
 ---
 
 ## Testing
 
-Run all tests from the **project root** directory.
+Run all tests from the **workspace root** (`imrl_workspace/`) directory.
 
 ### Run individual task tests
 
 ```bash
 # Task 3 — generate_order_message()
-pytest tests/test_task3_order_message.py -v
+pytest fleet_management/tests/test_task3_order_message.py -v
 
 # Task 4 — Graph class
-pytest tests/test_task4_graph.py -v
+pytest fleet_management/tests/test_task4_graph.py -v
 
 # Task 5 — Agent digital twin
-pytest tests/test_task5_agents.py -v
+pytest fleet_management/tests/test_task5_agents.py -v
 
 # Task 6 — A* pathfinding (PathPlanning)
-pytest tests/test_task6_astar.py -v
+pytest fleet_management/tests/test_task6_astar.py -v
 
-# Task 7 — state_callback()
-pytest tests/test_task7_state_callback.py -v
+# Task 7 — Fleet management integration
+pytest fleet_management/tests/test_task7_fleet_integration.py -v
 
-# Task 8 — TaskAssignment
-pytest tests/test_task8_task_assignment.py -v
+# Task 8 — state_callback()
+pytest fleet_management/tests/test_task8_state_callback.py -v
 
-# Task 9 — Full automation (fleet_manager loop + daemon thread)
-pytest tests/test_task9_fleet_manager.py -v
+# Task 9 — TaskAssignment
+pytest fleet_management/tests/test_task9_task_assignment.py -v
+
+# Task 10 — Full automation (fleet_manager loop + daemon thread)
+pytest fleet_management/tests/test_task10_fleet_manager.py -v
 ```
 
 ### Run all tests at once
 
 ```bash
-pytest tests/ -v
+pytest fleet_management/ -v
 ```
 
 ### Notes
@@ -475,7 +505,6 @@ pytest tests/ -v
 - Tests are independent per file — each tests exactly one task.
 - No MQTT broker is needed — broker calls are mocked in all tests.
 - The simulation executable does **not** need to be running.
-- Run tests from the project root so that `data/input_files/` is found correctly.
 
 
 ---
@@ -497,9 +526,9 @@ pytest tests/ -v
 |-------|-----------|---------|
 | `KIT/IMRL/mouse001/order` | Fleet → Robot | VDA 5050 order message |
 | `KIT/IMRL/mouse001/state` | Robot → Fleet | VDA 5050 state message |
-| `KIT/IMRL/tasks` | Fleet → Visualizer | Task list (for dashboard) |
+| `KIT/IMRL/tasks` | Fleet → Visualizer | Task list (for visualization) |
 
-### Threading (Tasks 8 & 9)
+### Threading (Tasks 9 & 10)
 
 Use Python's `threading.Thread` with `daemon=True` so that background threads
 terminate automatically when the main process exits.

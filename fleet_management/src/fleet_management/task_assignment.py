@@ -20,7 +20,7 @@ class TaskAssignment:
         self.task_management = task_management
         self.simulation_start_time = simulation_start_time
 
-        # TODO Task 8: Uncomment the line below once task_assignment_manager()
+        # TODO Task 9: Uncomment the line below once task_assignment_manager()
         #              is implemented and tested.
         # threading.Thread(target=self.task_assignment_manager, daemon=True).start()
 
@@ -28,7 +28,7 @@ class TaskAssignment:
         """
         Continuously assign unassigned tasks to idle agents.
 
-        Task 8 — implementation steps:
+        Task 9 — implementation steps:
             1. Loop until all tasks in self.task_management.task_list are
                assigned:
                    while any(not t['task_assigned']
@@ -52,5 +52,5 @@ class TaskAssignment:
             6. Sleep briefly before the next check to avoid busy-waiting:
                    time.sleep(0.5)
         """
-        # TODO Task 8: Implement this method.
+        # TODO Task 9: Implement this method.
         pass

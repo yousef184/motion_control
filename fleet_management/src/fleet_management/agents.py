@@ -33,14 +33,17 @@ class Agents:
         # TODO Task 5: Extend this to pass all attributes your Agent class needs.
         # You may also add any additional attributes to the Agent constructor as needed
         # in the folowing tasks.
-        agents = [Agent(
-            agents=self,
-            agentId=agents_initialization_data['agents'][0]['agentId'],
-            agent_state='IDLE',
-            agent_order_topic=agents_initialization_data['agents'][0]['orderTopic'],
-            agent_state_topic=agents_initialization_data['agents'][0]['stateTopic'],
-            logging=self.logging
-        )]
+        agents = [
+            Agent(
+                agents=self,
+                agentId=entry['agentId'],
+                agent_state='IDLE',
+                agent_order_topic=entry['orderTopic'],
+                agent_state_topic=entry['stateTopic'],
+                logging=self.logging
+            )
+            for entry in agents_initialization_data['agents']
+        ]
         return agents
 
 
@@ -83,6 +86,8 @@ class Agent:
         # Examples (not exhaustive — choose what your implementation requires):
         #   self.current_node  = None   # current node ID (needed by A* in Task 6)
         #   self.current_task  = None   # task dict from task_management.task_list
+        # TODO Task 5: Add any additional attributes needed for your implementation.
+        pass
 
     def state_callback(self, client, userdata, msg) -> None:
         """
@@ -101,8 +106,9 @@ class Agent:
                - When state_msg['nodeStates'] AND state_msg['edgeStates'] are empty
                  AND all actions in state_msg['actionStates'] have 'actionStatus' == 'FINISHED',
                  the robot has finished its current order.
-               - Set the current task's 'task_completed' = True in
-                 self.agents.agents[0].agents.task_management.task_list  (or via reference).
+               - Set self.current_task['task_completed'] = True.
+                 (self.current_task holds a reference to the task dict inside
+                 task_management.task_list, so updating it here updates the list directly.)
                - Set self.agent_state = 'IDLE'.
 
         Hint: use json.loads(msg.payload.decode()) to parse the message.
@@ -111,4 +117,5 @@ class Agent:
             f"Client {self.mqtt_subscriber_state.client_id} received message "
             f"`{msg.payload.decode()}` from topic `{msg.topic}`.")
 
-        # TODO Task 7: Parse the state message and update agent attributes.
+        # TODO Task 8: Parse the state message and update agent attributes.
+        pass

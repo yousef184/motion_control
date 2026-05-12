@@ -1,6 +1,6 @@
 """
-Task 9 Validation — Full automation (fleet_manager loop + daemon thread)
-Run from the project root:  pytest tests/test_task9_fleet_manager.py -v
+Task 10 Validation — Full automation (fleet_manager loop + daemon thread)
+Run from the workspace root:  pytest fleet_management/tests/test_task10_fleet_manager.py -v
 
 Tests that:
   1. FleetManagement.__init__() launches fleet_manager() in a daemon thread
@@ -20,6 +20,11 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'input_files')
+
+# Stub paho-mqtt so tests run without a broker connection
+for _mod in ('paho', 'paho.mqtt', 'paho.mqtt.client'):
+    sys.modules.setdefault(_mod, MagicMock())
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -82,7 +87,7 @@ def mock_setup():
         }
         mock_graph.dwelling_nodes = ["N5"]
 
-        with open("data/input_files/config_file.json") as f:
+        with open(os.path.join(_DATA_DIR, "config_file.json")) as f:
             config_data = json.load(f)
 
         # Bypass __init__ so no thread is started before we are ready
@@ -105,19 +110,6 @@ def mock_setup():
         yield fm, mock_agent, task_list
 
 
-# ── Method existence ──────────────────────────────────────────────────────────
-
-def test_has_fleet_manager(mock_setup):
-    fm, _, _ = mock_setup
-    assert hasattr(fm, 'fleet_manager'), \
-        "FleetManagement must have a 'fleet_manager' method"
-
-
-def test_fleet_manager_is_callable(mock_setup):
-    fm, _, _ = mock_setup
-    assert callable(fm.fleet_manager), "fleet_manager must be callable"
-
-
 # ── Daemon thread ─────────────────────────────────────────────────────────────
 
 def test_init_starts_daemon_thread():
@@ -137,9 +129,9 @@ def test_init_starts_daemon_thread():
         from fleet_management.fleet_management import FleetManagement
         from fleet_management.graph import Graph
 
-        with open("data/input_files/config_file.json") as f:
+        with open(os.path.join(_DATA_DIR, "config_file.json")) as f:
             config_data = json.load(f)
-        with open("data/input_files/lif_file.json") as f:
+        with open(os.path.join(_DATA_DIR, "lif_file.json")) as f:
             lif_data = json.load(f)
 
         graph = Graph(lif_data=lif_data)

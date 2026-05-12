@@ -1,10 +1,10 @@
 """
-Task 8 Validation — TaskAssignment
-Run from the project root:  pytest tests/test_task8_task_assignment.py -v
+Task 9 Validation — TaskAssignment
+Run from the workspace root:  pytest fleet_management/tests/test_task9_task_assignment.py -v
 
 Tests that task_assignment_manager() correctly assigns unassigned tasks to idle agents.
 No MQTT broker needed — all components are mocked.
-Requires Task 7 to be implemented first (agent_state must be updated by state_callback).
+Requires Task 8 to be implemented first (agent_state must be updated by state_callback).
 """
 import sys
 import os
@@ -14,6 +14,10 @@ import pytest
 from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+# Stub paho-mqtt so tests run without a broker connection
+for _mod in ('paho', 'paho.mqtt', 'paho.mqtt.client'):
+    sys.modules.setdefault(_mod, MagicMock())
 
 
 @pytest.fixture
@@ -68,19 +72,6 @@ def mock_setup():
             simulation_start_time=time.time()
         )
         yield ta, mock_agent, mock_task_management
-
-
-# ── Method existence ─────────────────────────────────────────────────────────
-
-def test_has_task_assignment_manager(mock_setup):
-    ta, _, _ = mock_setup
-    assert hasattr(ta, 'task_assignment_manager'), \
-        "TaskAssignment must have a 'task_assignment_manager' method"
-
-def test_manager_is_callable(mock_setup):
-    ta, _, _ = mock_setup
-    assert callable(ta.task_assignment_manager), \
-        "task_assignment_manager must be callable"
 
 
 # ── Assignment behaviour ─────────────────────────────────────────────────────

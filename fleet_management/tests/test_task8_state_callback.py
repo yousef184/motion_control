@@ -1,6 +1,6 @@
 """
-Task 7 Validation — state_callback()
-Run from the project root:  pytest tests/test_task7_state_callback.py -v
+Task 8 Validation — state_callback()
+Run from the workspace root:  pytest fleet_management/tests/test_task8_state_callback.py -v
 
 Tests that state_callback() correctly parses incoming VDA 5050 state messages
 and updates the Agent's attributes accordingly.
@@ -14,11 +14,16 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'input_files')
+
+# Stub paho-mqtt so tests run without a broker connection
+for _mod in ('paho', 'paho.mqtt', 'paho.mqtt.client'):
+    sys.modules.setdefault(_mod, MagicMock())
 
 
 @pytest.fixture(scope="module")
 def state_msg_data():
-    with open("data/input_files/stateMessage_Example.json") as f:
+    with open(os.path.join(_DATA_DIR, "stateMessage_Example.json")) as f:
         return json.load(f)
 
 @pytest.fixture(scope="module")
@@ -131,7 +136,7 @@ def test_task_completed_when_order_done(agent):
     """state_callback must set current_task['task_completed'] = True when the
     robot has finished its order (nodeStates=[], edgeStates=[], all actions FINISHED).
 
-    This signals task_assignment_manager() (Task 8) that the agent is free for
+    This signals task_assignment_manager() (Task 9) that the agent is free for
     the next task.
     """
     if not hasattr(agent, 'current_task'):
