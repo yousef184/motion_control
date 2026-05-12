@@ -46,7 +46,7 @@ def publish_dict_to_mqtt(robot_name):
     Initialize the MQTT client, capture keyboard input, and publish robot commands.
     """
     # Define the MQTT topic based on the robot's name
-    mqtt_topic_cmd = "uagv/v2/KIT/" + robot_name + "/cmd"
+    mqtt_topic_cmd = "KIT/IMRL" + robot_name + "/cmd"
 
     # Create a new MQTT client instance
     client = mqtt.Client()
