@@ -77,42 +77,26 @@ fleet_management/
 
 ## Version Control — One Branch Per Task
 
-Each task builds on the previous one, which means a mistake in Task 6 can
-accidentally break the working code from Task 5.
-To always have a working version you can return to (e.g., for MS1 or debugging),
-**create one Git branch per task**:
+Each task builds on the previous one. To always have a working version to fall back to, **create one Git branch per task**.
+All branches should be under your u-account namespace:
 
 ```bash
-# Start Task 3 from the main branch
+# Start Fleet Management Task 3 from main
 git checkout main
-git checkout -b task/task-3
+git checkout -b u-account/fm-task-3
 
-# ... implement Task 3 ...
-
+# ... implement Task 3 in src/fleet_management/fleet_management.py ...
 git add src/fleet_management/fleet_management.py \
         src/vda5050_interface/interfaces/order_interface.py
 git commit -m "Task 3: generate_order_message() implemented, path filled manually"
 
-# Start Task 4 from where Task 3 left off
-git checkout task/task-3
-git checkout -b task/task-4
-
-# ... implement Task 4 ...
-git add src/fleet_management/graph.py
-git commit -m "Task 4: Graph class implemented"
-
-# Continue the same pattern for Tasks 5–10
+# Start Task 4 from Task 3
+git checkout u-account/fm-task-3
+git checkout -b u-account/fm-task-4
+# ... continue for Tasks 5–10
 ```
 
-This way you can always switch back to a fully working task branch:
-
-```bash
-git checkout task/task-5   # returns to the Task 5 state instantly
-```
-
-**Tip:** Commit at the end of every implemented feature, not only when everything works and the whole task is completed.
-A commit with a note like "Task 6 WIP — A* returns correct path but actions missing"
-is still useful as a recovery point.
+**Tip:** Commit at the end of every implemented feature, not only when everything works.
 
 ---
 

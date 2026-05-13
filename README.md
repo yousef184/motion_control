@@ -69,9 +69,27 @@ git --version
 ```
 ---
 
-### Step 3 — Generate and add an SSH key to your GitLab account
-[follow this instruction](https://gitlab.kit.edu/help/user/ssh.md)
+### Step 3 — Generate and Add an SSH Key to your GitLab Account
 
+1. Generate a new SSH key pair (accept the default path, optionally set a passphrase):
+    ```bash
+    ssh-keygen -t ed25519 -C "you@example.com"
+    ```
+
+2. Copy the public key to your clipboard:
+    ```bash
+    cat ~/.ssh/id_ed25519.pub
+    ```
+
+3. In GitLab, go to **User Settings → SSH Keys**, paste the key, and click **Add key**.
+
+4. Verify the connection:
+    ```bash
+    ssh -T git@gitlab.kit.edu
+    ```
+    You should see a welcome message confirming your username.
+
+> For detailed instructions, see the [GitLab SSH documentation](https://gitlab.kit.edu/help/user/ssh.md).
 
 ---
 
@@ -153,5 +171,12 @@ code .
     ```
     You should see `Hello, World!` appear in Terminal 1.
 
-### Step 8 - Install MQTT Explorer
-MQTT Explorere is a useful tool to check and publish mqtt-messages for debugging. It can be downloaded via [Link](https://mqtt-explorer.com/).
+---
+
+### Step 8 — Install MQTT Explorer
+
+[MQTT Explorer](https://mqtt-explorer.com/) is a useful tool to inspect and publish MQTT messages for debugging.
+
+1. Download and install it from [mqtt-explorer.com](https://mqtt-explorer.com/).
+2. Connect to `localhost` on port `1883`.
+3. You should see incoming messages as soon as the simulation is running.
