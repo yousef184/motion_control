@@ -28,7 +28,3 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Output / generated files
-fleet_management/data/output_files/
-motion_control/data/output_files/
