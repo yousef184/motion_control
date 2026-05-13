@@ -67,21 +67,26 @@ Verify:
 ```bash
 git --version
 ```
+---
+
+### Step 3 — Generate and add an SSH key to your GitLab account
+[follow this instruction](https://gitlab.kit.edu/help/user/ssh.md)
+
 
 ---
 
-### Step 3 — Clone the Repository
+### Step 4 — Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone git@gitlab.kit.edu:kit/ifl/lehrveranstaltungen/industrial-mobile-robotics-lab/imrl_workspace.git
 cd imrl_workspace
 ```
 
-> **WSL users:** run this inside the WSL terminal so the files live in the Linux filesystem — this avoids performance and permission issues that occur when working on Windows-side paths (`/mnt/c/...`) from WSL.
+> **WSL users:** run this inside the WSL terminal so the files live in the Linux filesystem.
 
 ---
 
-### Step 4 — Open the Workspace in VS Code
+### Step 5 — Open the Workspace in VS Code
 
 From the terminal inside the `imrl_workspace` folder:
 
@@ -89,17 +94,16 @@ From the terminal inside the `imrl_workspace` folder:
 code .
 ```
 
-- **WSL:** VS Code will automatically install the WSL extension and reopen in the WSL environment on first use.
 - Install the **Python** extension in VS Code if prompted (or search for it in the Extensions sidebar).
 
 ---
 
-### Step 5 — Set Up the Conda Environment
+### Step 6 — Set Up the Conda Environment
 
 1. Install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) if not already installed (follow the Linux instructions).
    A [conda cheatsheet](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf) is available for reference.
 
-2. Open a terminal in VS Code (`` Ctrl+` ``) and verify the installation:
+2. Open a terminal in VS Code and verify the installation:
     ```bash
     conda --version
     ```
@@ -124,7 +128,7 @@ code .
 
 ---
 
-### Step 6 — Install and Verify the Mosquitto MQTT Broker
+### Step 7 — Install and Verify the Mosquitto MQTT Broker
 
 1. Install Mosquitto:
     ```bash
@@ -148,3 +152,6 @@ code .
     mosquitto_pub -h localhost -t test/topic -m "Hello, World!"
     ```
     You should see `Hello, World!` appear in Terminal 1.
+
+### Step 8 - Install MQTT Explorer
+MQTT Explorere is a useful tool to check and publish mqtt-messages for debugging. It can be downloaded via [Link](https://mqtt-explorer.com/).
