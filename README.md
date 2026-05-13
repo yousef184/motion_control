@@ -139,6 +139,12 @@ Control the robot to drive along the extracted route, waypoint by waypoint.
 - The simulation releases the second part of the order only after receiving a correct state message.
 - An example state message is in `imrl_workspace/json_examples/stateMessage_Example.json`. For motion control task 2 and task 3, you only need to give the correct `lastNodeId`.
 
+**Steps to implement:**
+1. `Robot.update_pose()` — parse the pose message and update `self.x`, `self.y`, `self.theta`.
+2. `Robot.receive_order()` — build `self.trajectory` from released node positions.
+3. `Robot.build_status_message()` — construct a VDA 5050 state dict.
+4. `follow_trajectory()` — implement a controller (e.g., proportional) that computes `linear_vel` and `angular_vel`, advances `current_index` when close enough to the target, and sets `status_update_needed = True` on waypoint arrival.
+
 
 **Evaluation:** The deviation from the assigned route is shown in the upper right corner of the simulation window. Minimize it.
 
@@ -155,6 +161,13 @@ Adapt the controller from Task 2 to handle realistic conditions:
 
 **Goal:** Minimize the deviation from the assigned route under these conditions.
 
+**Suggested adaptations:**
+- Apply a low-pass filter or moving-average filter to smooth noisy pose readings.
+- Implement velocity ramp-up/ramp-down to respect acceleration limits (e.g., gradually increase/decrease speed rather than jumping to maximum velocity immediately).
+- Tune controller gains to avoid oscillation caused by noisy feedback.
+
+
+
 ---
 
 ## Troubleshooting
@@ -162,7 +175,8 @@ Adapt the controller from Task 2 to handle realistic conditions:
 - **Robot does not move:** Verify the MQTT broker (Mosquitto) is running (`mosquitto -v`) and that your control script is connected to `localhost:1883`.
 - **Keys not captured in keyboard control:** Click on the simulation window to give it focus before pressing arrow keys.
 - **Simulation does not open:** Check that `run_simulation` executable has execute permission:
+  In a terminal, navigate to your imrl_workspace, then run
   ```bash
-  chmod +x src/mobile_robot_simulation/dist/run_simulation
+  chmod +x motion_control/src/mobile_robot_simulation/dist/run_simulation
   ```
 - **Second part of order never released:** Ensure your state message includes all required VDA 5050 fields. Compare with `json_examples/stateMessage_Example.json`.
