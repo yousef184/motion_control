@@ -69,19 +69,19 @@ Example messages for all topics can be found in `imrl_workspace/json_examples/`.
 ## Version Control — One Branch Per Task
 
 Each task builds on the previous one. To always have a working version to fall back to, **create one Git branch per task**:
-
+All branches should be under your u-account namespace
 ```bash
-# Start Task 1 from main
+# Start Motion Control Task 1 from main
 git checkout main
-git checkout -b task/task-1
+git checkout -b u-account/mc-task-1
 
-# ... implement Task 1 ...
-git add src/motion_control/task_1.py
+# ... implement Task 1 in src/motion_control/task_1.py ...
+git add src/motion_control/mc-task_1.py
 git commit -m "Task 1: order parsing implemented"
 
 # Start Task 2 from Task 1
-git checkout task/task-1
-git checkout -b task/task-2
+git checkout u-account/mc-task-1
+git checkout -b u-account/mc-task-2
 # ... continue for Tasks 2, 3
 ```
 
