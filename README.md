@@ -117,9 +117,9 @@ Parse the necessary information from the VDA 5050 order message and convert it i
 1. Decode the JSON payload.
 2. Extract `nodes` and `edges` from the message.
 3. Filter to only the released entries.
-4. Store the waypoint positions for use in Task 2.
+4. Store the waypoint positions in a list for use in Task 2.
 
-**Goal:** Print or store the sequence of released node positions `(x, y)` that form the route.
+**Goal:** Print the sequence of released node positions `(x, y)` that form the route.
 
 ---
 
@@ -137,13 +137,8 @@ Control the robot to drive along the extracted route, waypoint by waypoint.
 **State reporting (required to unlock the second part of the order):**
 - Build and publish a VDA 5050-compliant state message to `KIT/IMRL/mouse001/state`.
 - The simulation releases the second part of the order only after receiving a correct state message.
-- An example state message is in `imrl_workspace/json_examples/stateMessage_Example.json`.
+- An example state message is in `imrl_workspace/json_examples/stateMessage_Example.json`. For motion control task 2 and task 3, you only need to give the correct `lastNodeId`.
 
-**Steps to implement:**
-1. `Robot.update_pose()` — parse the pose message and update `self.x`, `self.y`, `self.theta`.
-2. `Robot.receive_order()` — build `self.trajectory` from released node positions.
-3. `Robot.build_status_message()` — construct a VDA 5050 state dict.
-4. `follow_trajectory()` — implement a controller (e.g., proportional) that computes `linear_vel` and `angular_vel`, advances `current_index` when close enough to the target, and sets `status_update_needed = True` on waypoint arrival.
 
 **Evaluation:** The deviation from the assigned route is shown in the upper right corner of the simulation window. Minimize it.
 
@@ -159,11 +154,6 @@ Adapt the controller from Task 2 to handle realistic conditions:
 - **Dynamic constraints:** The robot's acceleration, deceleration, and maximum velocity are limited — abrupt velocity changes are not possible.
 
 **Goal:** Minimize the deviation from the assigned route under these conditions.
-
-**Suggested adaptations:**
-- Apply a low-pass filter or moving-average filter to smooth noisy pose readings.
-- Implement velocity ramp-up/ramp-down to respect acceleration limits (e.g., gradually increase/decrease speed rather than jumping to maximum velocity immediately).
-- Tune controller gains to avoid oscillation caused by noisy feedback.
 
 ---
 
