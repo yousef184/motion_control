@@ -244,7 +244,40 @@ class PathPlanning:
               for each consecutive pair in the reconstructed path_nodes.
         """
         # TODO Task 6: Implement A* here.
-        pass
+        if start_node == goal_node:
+            return ([start_node], [])
+
+        import heapq
+        open_heap = [(self.get_h(start_node, goal_node), start_node)]
+        g_score = {start_node: 0.0}
+        came_from = {}
+
+        while open_heap:
+            _, current = heapq.heappop(open_heap)
+
+            if current == goal_node:
+                path_nodes = [goal_node]
+                node = goal_node
+                while node in came_from:
+                    node = came_from[node]
+                    path_nodes.append(node)
+                path_nodes.reverse()
+                path_edges = [
+                    self.graph.get_connected_edge(path_nodes[i], path_nodes[i + 1])
+                    for i in range(len(path_nodes) - 1)
+                ]
+                return (path_nodes, path_edges)
+
+            current_g = g_score[current]
+            for neighbor in self.graph.get_connected_nodes(current):
+                tentative_g = current_g + self.get_distance(current, neighbor)
+                if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                    g_score[neighbor] = tentative_g
+                    came_from[neighbor] = current
+                    f = tentative_g + self.get_h(neighbor, goal_node)
+                    heapq.heappush(open_heap, (f, neighbor))
+
+        return (None, None)
 
     def get_h(self, current_node: str, goal_node: str) -> float:
         """
@@ -255,7 +288,9 @@ class PathPlanning:
         This heuristic is admissible (straight-line <= actual path length).
         """
         # TODO Task 6: Implement this method.
-        pass
+        pos_current = self.graph.nodes[current_node]["pos"]
+        pos_goal = self.graph.nodes[goal_node]["pos"]
+        return math.dist(pos_current, pos_goal)
 
     def get_distance(self, start_node: str, goal_node: str) -> float:
         """
@@ -264,4 +299,5 @@ class PathPlanning:
         Task 6: Same formula as get_h(); used as the g-score increment per step.
         """
         # TODO Task 6: Implement this method.
-        pass
+        return self.get_h(start_node, goal_node)
+   ### pytest fleet_management/tests/test_task6_astar.py -v   来验证
