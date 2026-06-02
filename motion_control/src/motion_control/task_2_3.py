@@ -37,22 +37,58 @@ class Robot:
 
         self.status_update_needed = False  # Flag for event-triggered status update
 
+        #prepare for lowpass filter 
+        self.pose_initialized = False
+        #滤波后位姿
+        self.x_f = 0.0
+        self.y_f = 0.0
+        self.theta_f = 0.0
+        # 实际上一次下发的速度（用于斜坡）
+        self.cmd_lin = 0.0
+        self.cmd_ang = 0.0  
+        #滤波参数
+        self.alpha = 0.55  #0 < alpha < 1，越大响应越快 但噪声越大 越小越平滑
+
     def update_pose(self, msg):
         # TODO: Parse pose update from payload 
         # 每次收到 pose 消息，更新 self.x/self.y/self.theta
         data = json.loads(msg.payload.decode("utf-8"))
         pos = data.get("position", {})
-        self.x = pos.get("x", self.x)
-        self.y = pos.get("y", self.y)
+        #不再直接用selfxy，选用滤波后的值
+        # self.x = pos.get("x", self.x)
+        # self.y = pos.get("y", self.y)
         #self.theta = pos.get("theta", self.theta)  position里没有Theta！！！
+        raw_x = pos.get("x", self.x_f)
+        raw_y = pos.get("y", self.y_f)
+        
         ori = data.get("orientation", {})
         z = ori.get("z", 0.0)
         w = ori.get("w", 1.0)
-        self.theta = 2.0 * math.atan2(z, w)
+        #self.theta = 2.0 * math.atan2(z, w)
+
+        raw_theta = 2.0 * math.atan2(z, w)
+        # 在init里一键切换滤波模式，直接对齐
+        if not self.pose_initialized:
+            self.x_f = raw_x
+            self.y_f = raw_y
+            self.theta_f = raw_theta
+            self.pose_initialized = True
+        else:
+            a = self.alpha
+            self.x_f = a * raw_x + (1 - a) * self.x_f
+            self.y_f = a * raw_y + (1 - a) * self.y_f
+            self.theta_f = math.atan2(
+                a * math.sin(raw_theta) + (1 - a) * math.sin(self.theta_f),
+                a * math.cos(raw_theta) + (1 - a) * math.cos(self.theta_f),
+            )
+
+        # 控制里统一用滤波后的值   也可以用原始值，没差
+        self.x = self.x_f #或者 raw.x_f
+        self.y = self.y_f #或者 raw.y_f
+        self.theta = self.theta_f #或者 raw.theta_f
 
         # print(f"Pose updated: x={self.x}, y={self.y}, theta={self.theta}")
     
-
     def receive_order(self, msg):
         # TODO: Parse nodes and edges from the order message
         
@@ -74,10 +110,14 @@ class Robot:
         self.current_index = 0     # Reset index
         self.last_node_id = None
         self.status_update_needed = True  # Order receipt triggers a status update
-        print("[ORDER] trajectory:", self.trajectory)
+        
+        # Task3: 新订单时清零斜坡速度，避免带着旧速度起步
+        self.pose_initialized = False   # 新订单重置滤波器，快速对齐新位置
+        self.cmd_lin = 0.0
+        self.cmd_ang = 0.0
 
         #点 RESET 后，终端打印出轨迹坐标
-
+        print("[ORDER] trajectory:", self.trajectory)
 
     def build_status_message(self):
         # TODO: Construct and return VDA5050-compliant status message
@@ -110,12 +150,11 @@ class Robot:
             "operatingMode": "AUTOMATIC",
             "errors": [],
             "safetyState": {"eStop": "NONE", "fieldViolation": False},
-    }
+        }
         #验证：终端里 [STATE VALIDATION ERROR] 消失
         return status
 
-
-def follow_trajectory(robot: Robot): #pd控制器  到一个waypoint切下个点
+def follow_trajectory(robot: Robot): #pd控制器  到一个waypoint切下个点 
     """
     Follow the trajectory by:
     - Computing control commands based on current pose and next waypoint
@@ -130,21 +169,25 @@ def follow_trajectory(robot: Robot): #pd控制器  到一个waypoint切下个点
     """
     if robot.current_index < len(robot.trajectory):
         #parameters for P controller  Proportion+Integration+Differentiation
-        k_v = 0.5 #线速度  v = Kp_dist * distance 
-        k_w = 1.2 #角速度  w = Kp_ang * heading_error
-        max_linear = 0.35
-        max_angular = 1.0
-        arrival_threshold = 0.2  #调试一下看看效果 
+        k_v = 0.45 #线速度  v = Kp_dist * distance 
+        k_w = 1.1 #角速度  w = Kp_ang * heading_error
+        max_linear = 0.32
+        max_angular = 0.75
+        arrival_threshold = 0.10  
         #P 跑通 如超调明显，加 D  如总有固定偏差，再谨慎加 I
+        
+        #Task3 的核心：Task2 P 控制 + 跳过点 + 先转再走 + 斜坡。
+        dt = 0.1  # 与 main 里 sleep(0.1) 一致
+        max_lin_acc = 0.25   # m/s^2，每步最多变 0.25
+        max_ang_acc = 0.8    # rad/s^2
+        
 
-
+        #计算当前点与目标点的距离，hypot函数返回欧几里得距离
         target = robot.trajectory[robot.current_index]
         target_x, target_y = target
         dx = target_x - robot.x
         dy = target_y - robot.y
         dist = math.hypot(dx, dy) 
-        #计算当前点与目标点的距离，hypot函数返回欧几里得距离
-        
 
         # TODO: Compute control commands (linear_vel, angular_vel)
         # 默认值（先保留）
@@ -164,12 +207,12 @@ def follow_trajectory(robot: Robot): #pd控制器  到一个waypoint切下个点
         # 再覆盖默认值 + PD 控制器
 
 
-        if abs(heading_error) > 0.6:
+        if abs(heading_error) > 0.35:
             linear_vel = 0.0
         else:
-            linear_vel = min(max_linear, k_v * dist)
+            #linear_vel = min(max_linear, k_v * dist)
+            linear_vel = min(max_linear, k_v * dist * math.cos(heading_error))
         angular_vel = max(-max_angular, min(max_angular, k_w * heading_error))
-        
 
         # TODO: Check if the robot is close enough to the target
         # If so:
@@ -185,26 +228,45 @@ def follow_trajectory(robot: Robot): #pd控制器  到一个waypoint切下个点
             robot.status_update_needed = True
             linear_vel = 0.0
             angular_vel = 0.0
+            # Task3: 到点立刻清零实际下发速度，避免拐点拖尾
+            robot.cmd_lin = 0.0
+            robot.cmd_ang = 0.0
+
+        # --- 斜坡：限制 cmd 变化率 ---
+        d_lin = linear_vel - robot.cmd_lin
+        d_ang = angular_vel - robot.cmd_ang
+        d_lin = max(-max_lin_acc * dt, min(max_lin_acc * dt, d_lin))
+        d_ang = max(-max_ang_acc * dt, min(max_ang_acc * dt, d_ang))
+        robot.cmd_lin += d_lin
+        robot.cmd_ang += d_ang
+
         #检测位置点
-        print(
-            f"idx={robot.current_index}, dist={dist:.3f}, "
-            f"target=({target_x},{target_y}), pose=({robot.x:.2f},{robot.y:.2f},{robot.theta:.2f}), "
-            f"heading_err={heading_error:.2f}, lin={linear_vel:.2f}, ang={angular_vel:.2f}"
-        )
-    
+        # print(
+        #     f"idx={robot.current_index}, dist={dist:.3f}, "
+        #     f"target=({target_x},{target_y}), pose=({robot.x:.2f},{robot.y:.2f},{robot.theta:.2f}), "
+        #     f"heading_err={heading_error:.2f}, lin={linear_vel:.2f}, ang={angular_vel:.2f}"
+        # )
+
+
         cmd = {
-            "linear": {"x": linear_vel, "y": 0.0, "z": 0.0},
-            "angular": {"x": 0.0, "y": 0.0, "z": angular_vel}
+            # "linear": {"x": linear_vel, "y": 0.0, "z": 0.0},
+            # "angular": {"x": 0.0, "y": 0.0, "z": angular_vel}
+            # 加入斜坡控制
+            "linear": {"x": robot.cmd_lin, "y": 0.0, "z": 0.0},
+            "angular": {"x": 0.0, "y": 0.0, "z": robot.cmd_ang},
+        
         }
+
+        
         return cmd
+    
     else:
+        robot.cmd_lin = 0.0
+        robot.cmd_ang = 0.0
         return {
             "linear": {"x": 0.0, "y": 0.0, "z": 0.0},
             "angular": {"x": 0.0, "y": 0.0, "z": 0.0}
-        }
-    
-    
-    
+        }  
 
 def send_status_update(client, topic, robot: Robot):
     status = robot.build_status_message()
