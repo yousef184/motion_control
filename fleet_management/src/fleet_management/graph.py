@@ -29,7 +29,23 @@ class Graph:
               Each node has a 'nodeId' and 'nodePosition' with 'x' and 'y'.
         """
         # TODO Task 4: Implement this method.
-        pass
+        nodes = {}
+        for node in lif_data["layouts"][0]["nodes"]:
+            node_id = node["nodeId"]
+            pos = node["nodePosition"]
+            props = []
+            for p in node.get("vehicleTypeNodeProperties", []):
+                prop = dict(p)
+                theta = prop.get("theta")
+                if theta == "None" or theta is None:
+                    prop["theta"] = None
+                props.append(prop)
+            nodes[node_id] = {
+                "nodeId": node_id,
+                "pos": (pos["x"], pos["y"]),
+                "vehicleTypeNodeProperties": props,
+            }
+        return nodes
 
     def get_edges(self, lif_data) -> dict:
         """
@@ -50,7 +66,19 @@ class Graph:
               Use self.nodes[nodeId]['pos'] to look up node positions.
         """
         # TODO Task 4: Implement this method.
-        pass
+        edges = {}
+        for edge in lif_data["layouts"][0]["edges"]:
+            edge_id = edge["edgeId"]
+            start_id = edge["startNodeId"]
+            end_id = edge["endNodeId"]
+            edges[edge_id] = {
+                "edgeId": edge_id,
+                "startNodeId": start_id,
+                "endNodeId": end_id,
+                "startNodePos": self.nodes[start_id]["pos"],
+                "endNodePos": self.nodes[end_id]["pos"],
+            }
+        return edges
 
     def get_stations(self, lif_data) -> dict:
         """
@@ -71,7 +99,15 @@ class Graph:
               Stations with stationDescription 'CHARGING' are dwelling nodes (see below).
         """
         # TODO Task 4: Implement this method.
-        pass
+        stations = {}
+        for station in lif_data["layouts"][0]["stations"]:
+            desc = station.get("stationDescription", "")
+            if desc in ("TRANSFER", "PROCESS"):
+                stations[station["stationId"]] = {
+                    "interactionNodeIds": station["interactionNodeIds"],
+                    "stationDescription": desc,
+                }
+        return stations
 
     def get_dwelling_nodes(self, lif_data) -> list:
         """
@@ -84,7 +120,11 @@ class Graph:
         Hint: same station list as get_stations(), just filter for 'CHARGING'.
         """
         # TODO Task 4: Implement this method.
-        pass
+        dwelling = []
+        for station in lif_data["layouts"][0]["stations"]:
+            if station.get("stationDescription") == "CHARGING":
+                dwelling.extend(station["interactionNodeIds"])
+        return dwelling
 
     # ── Helper methods (needed for Task 6 – A*) ──────────────────────────────
 
@@ -96,7 +136,13 @@ class Graph:
         Required by the A* algorithm to explore neighbors.
         """
         # TODO Task 4: Implement this method.
-        pass
+        connected = []
+        for edge in self.edges.values():
+            if edge["startNodeId"] == node_id:
+                connected.append(edge["endNodeId"])
+            elif edge["endNodeId"] == node_id:
+                connected.append(edge["startNodeId"])
+        return connected
 
     def get_connected_edge(self, startNodeId, endNodeId) -> str:
         """
@@ -106,4 +152,9 @@ class Graph:
         Required by the A* algorithm to build path_edges from a found path (list of node IDs).
         """
         # TODO Task 4: Implement this method.
-        pass
+        for edge in self.edges.values():
+            if (edge["startNodeId"] == startNodeId and edge["endNodeId"] == endNodeId) or (
+                edge["startNodeId"] == endNodeId and edge["endNodeId"] == startNodeId
+            ):
+                return edge["edgeId"]
+        return None
