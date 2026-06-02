@@ -72,11 +72,48 @@ class FleetManagement:
                 import threading
                 threading.Thread(target=self.fleet_manager, daemon=True).start()
         """
-        # TODO Task 3: Fill the two lists below manually for the first task (T1).
-        #              The full journey must cover:
-        #              dwelling -> [path] -> pick -> [path] -> process -> [path] -> drop -> [path] -> dwelling
-        nodes = []   # List of node dicts with nodeId, x, y, theta, actions
-        edges = []   # List of edge dicts with edgeId, startNodeId, endNodeId, actions
+        # Task 3: T1 path (matches orderMessage_Example.json)
+        # N5 -> N1 -> N7(init) -> N2(pick) -> N7 -> N8 -> N3(process) -> N13 -> N12(init) -> N4(drop) -> N12 -> N13 -> N14
+        nodes = [
+            {"nodeId": "N5", "x": 1.05, "y": 0.90, "theta": None, "actions": []},
+            {"nodeId": "N1", "x": 2.46, "y": 0.79, "theta": -1.57, "actions": []},
+            {"nodeId": "N7", "x": 2.46, "y": 2.25, "theta": None,
+             "actions": [{"actionType": "init_fine_positioning",
+                          "actionId": "81276cdd-0c17-4c7b-a2b7-9150d3d6c80f", "blockingType": "HARD"}]},
+            {"nodeId": "N2", "x": 2.46, "y": 3.70, "theta": 1.57,
+             "actions": [{"actionType": "pick",
+                          "actionId": "abaa06db-ffb5-4eef-8de3-6cf74d722cdf", "blockingType": "HARD"}]},
+            {"nodeId": "N7", "x": 2.46, "y": 2.25, "theta": None, "actions": []},
+            {"nodeId": "N8", "x": 4.00, "y": 2.25, "theta": None, "actions": []},
+            {"nodeId": "N3", "x": 5.45, "y": 2.25, "theta": None,
+             "actions": [{"actionType": "process",
+                          "actionId": "22817b07-4a1c-4698-ad73-78539dea88ab",
+                          "blockingType": "HARD", "processingTime": 1.0}]},
+            {"nodeId": "N13", "x": 5.55, "y": 3.50, "theta": None, "actions": []},
+            {"nodeId": "N12", "x": 4.00, "y": 3.50, "theta": None,
+             "actions": [{"actionType": "init_fine_positioning",
+                          "actionId": "897b0d7d-d395-400e-b2a9-2f82738502a8", "blockingType": "HARD"}]},
+            {"nodeId": "N4", "x": 5.55, "y": 4.75, "theta": 0.0,
+             "actions": [{"actionType": "drop",
+                          "actionId": "844538f5-0c63-4ddc-9b76-7bed887b96b5", "blockingType": "HARD"}]},
+            {"nodeId": "N12", "x": 4.00, "y": 3.50, "theta": None, "actions": []},
+            {"nodeId": "N13", "x": 5.55, "y": 3.50, "theta": None, "actions": []},
+            {"nodeId": "N14", "x": 6.80, "y": 3.50, "theta": None, "actions": []},
+        ]
+        edges = [
+            {"edgeId": "E21", "startNodeId": "N5", "endNodeId": "N1", "actions": []},
+            {"edgeId": "E1", "startNodeId": "N1", "endNodeId": "N7", "actions": []},
+            {"edgeId": "E2", "startNodeId": "N7", "endNodeId": "N2", "actions": []},
+            {"edgeId": "E2", "startNodeId": "N2", "endNodeId": "N7", "actions": []},
+            {"edgeId": "E3", "startNodeId": "N7", "endNodeId": "N8", "actions": []},
+            {"edgeId": "E5", "startNodeId": "N8", "endNodeId": "N3", "actions": []},
+            {"edgeId": "E17", "startNodeId": "N3", "endNodeId": "N13", "actions": []},
+            {"edgeId": "E12", "startNodeId": "N13", "endNodeId": "N12", "actions": []},
+            {"edgeId": "E19", "startNodeId": "N12", "endNodeId": "N4", "actions": []},
+            {"edgeId": "E19", "startNodeId": "N4", "endNodeId": "N12", "actions": []},
+            {"edgeId": "E12", "startNodeId": "N12", "endNodeId": "N13", "actions": []},
+            {"edgeId": "E16", "startNodeId": "N13", "endNodeId": "N14", "actions": []},
+        ]
 
         agent = self.agents.agents[0]
         agent.order_interface.generate_order_message(
