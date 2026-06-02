@@ -35,23 +35,22 @@ class Robot:
         self.nodes = [n for n in nodes if n.get("released", False)] #3
         self.edges = [e for e in edges if e.get("released", False)] #3
 
-    route = []  #4  并且打印出每个节点的ID和坐标信息
-    for node in self.nodes:
-        node_id = node.get("nodeId")
-        pos = node.get("nodePosition", {})
-        x = pos.get("x")
-        y = pos.get("y")
+        route = []  #4  并且打印出每个节点的ID和坐标信息
+        for node in self.nodes:
+            node_id = node.get("nodeId")
+            pos = node.get("nodePosition", {})
+            x = pos.get("x")
+            y = pos.get("y")
 
-    if x is not None and y is not None:
-        route.append((x, y))
-        print(f"nodeId={node_id}, x={x}, y={y}")
-    else:
-        print(f"nodeId={node_id}, nodePosition missing x/y: {pos}")
-
-    print("Released route:", route)
-
-
+        if x is not None and y is not None:
+            route.append((x, y))
+            print(f"nodeId={node_id}, x={x}, y={y}")
+        else:
+            print(f"nodeId={node_id}, nodePosition missing x/y: {pos}")
+        print("Released route:", route)
+        
     pass
+
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe(userdata["topic_order"])
