@@ -72,50 +72,22 @@ class FleetManagement:
                 import threading
                 threading.Thread(target=self.fleet_manager, daemon=True).start()
         """
-        # Task 3: T1 path (matches orderMessage_Example.json)
-        # N5 -> N1 -> N7(init) -> N2(pick) -> N7 -> N8 -> N3(process) -> N13 -> N12(init) -> N4(drop) -> N12 -> N13 -> N14
-        nodes = [
-            {"nodeId": "N5", "x": 1.05, "y": 0.90, "theta": None, "actions": []},
-            {"nodeId": "N1", "x": 2.46, "y": 0.79, "theta": -1.57, "actions": []},
-            {"nodeId": "N7", "x": 2.46, "y": 2.25, "theta": None,
-             "actions": [{"actionType": "init_fine_positioning",
-                          "actionId": "81276cdd-0c17-4c7b-a2b7-9150d3d6c80f", "blockingType": "HARD"}]},
-            {"nodeId": "N2", "x": 2.46, "y": 3.70, "theta": 1.57,
-             "actions": [{"actionType": "pick",
-                          "actionId": "abaa06db-ffb5-4eef-8de3-6cf74d722cdf", "blockingType": "HARD"}]},
-            {"nodeId": "N7", "x": 2.46, "y": 2.25, "theta": None, "actions": []},
-            {"nodeId": "N8", "x": 4.00, "y": 2.25, "theta": None, "actions": []},
-            {"nodeId": "N3", "x": 5.45, "y": 2.25, "theta": None,
-             "actions": [{"actionType": "process",
-                          "actionId": "22817b07-4a1c-4698-ad73-78539dea88ab",
-                          "blockingType": "HARD", "processingTime": 1.0}]},
-            {"nodeId": "N13", "x": 5.55, "y": 3.50, "theta": None, "actions": []},
-            {"nodeId": "N12", "x": 4.00, "y": 3.50, "theta": None,
-             "actions": [{"actionType": "init_fine_positioning",
-                          "actionId": "897b0d7d-d395-400e-b2a9-2f82738502a8", "blockingType": "HARD"}]},
-            {"nodeId": "N4", "x": 5.55, "y": 4.75, "theta": 0.0,
-             "actions": [{"actionType": "drop",
-                          "actionId": "844538f5-0c63-4ddc-9b76-7bed887b96b5", "blockingType": "HARD"}]},
-            {"nodeId": "N12", "x": 4.00, "y": 3.50, "theta": None, "actions": []},
-            {"nodeId": "N13", "x": 5.55, "y": 3.50, "theta": None, "actions": []},
-            {"nodeId": "N14", "x": 6.80, "y": 3.50, "theta": None, "actions": []},
-        ]
-        edges = [
-            {"edgeId": "E21", "startNodeId": "N5", "endNodeId": "N1", "actions": []},
-            {"edgeId": "E1", "startNodeId": "N1", "endNodeId": "N7", "actions": []},
-            {"edgeId": "E2", "startNodeId": "N7", "endNodeId": "N2", "actions": []},
-            {"edgeId": "E2", "startNodeId": "N2", "endNodeId": "N7", "actions": []},
-            {"edgeId": "E3", "startNodeId": "N7", "endNodeId": "N8", "actions": []},
-            {"edgeId": "E5", "startNodeId": "N8", "endNodeId": "N3", "actions": []},
-            {"edgeId": "E17", "startNodeId": "N3", "endNodeId": "N13", "actions": []},
-            {"edgeId": "E12", "startNodeId": "N13", "endNodeId": "N12", "actions": []},
-            {"edgeId": "E19", "startNodeId": "N12", "endNodeId": "N4", "actions": []},
-            {"edgeId": "E19", "startNodeId": "N4", "endNodeId": "N12", "actions": []},
-            {"edgeId": "E12", "startNodeId": "N12", "endNodeId": "N13", "actions": []},
-            {"edgeId": "E16", "startNodeId": "N13", "endNodeId": "N14", "actions": []},
-        ]
+        # Task 7 — A* pipeline (replaces Task 3 manual nodes/edges)
+        task = next((t for t in self.task_management.task_list if not t['task_assigned']), None)
+        if task is None:
+            return
 
         agent = self.agents.agents[0]
+        path_nodes, path_edges = self.build_path_for_task(task, agent.current_node)
+        if path_nodes is None:
+            return
+        nodes = self.build_order_nodes(path_nodes, task)
+        edges = self.build_order_edges(path_nodes, path_edges)
+
+        task['task_assigned'] = True
+        agent.agent_state = 'EXECUTING'
+        agent.current_task = task
+
         agent.order_interface.generate_order_message(
             agent=agent,
             orderId=str(self.agents.order_header_id),
@@ -151,7 +123,29 @@ class FleetManagement:
         Returns (path_nodes, path_edges).
         """
         # TODO Task 7: Implement this method.
-        pass
+        path_nodes = []
+        path_edges = []
+        current = start_node
+
+        last_station = task['stations'][-1]['nodeId']
+        pos_last = self.graph.nodes[last_station]['pos']
+        nearest_dwelling = min(
+            self.graph.dwelling_nodes,
+            key=lambda d: math.dist(pos_last, self.graph.nodes[d]['pos']),
+        )
+        goals = [s['nodeId'] for s in task['stations']] + [nearest_dwelling]
+
+        for goal in goals:
+            leg_nodes, leg_edges = self.path_planning.astar_search(current, goal)
+            if leg_nodes is None:
+                return (None, None)
+            if path_nodes:
+                leg_nodes = leg_nodes[1:]
+            path_nodes.extend(leg_nodes)
+            path_edges.extend(leg_edges)
+            current = goal
+
+        return (path_nodes, path_edges)
 
     def build_order_nodes(self, path_nodes: list, task: dict) -> list:
         """
@@ -185,7 +179,53 @@ class FleetManagement:
                 add init_fine_positioning to path_nodes[i]
         """
         # TODO Task 7: Implement this method.
-        pass
+        station_by_node = {s['nodeId']: s for s in task['stations']}
+        order_nodes = []
+        for i, node_id in enumerate(path_nodes):
+            x, y = self.graph.nodes[node_id]['pos']
+            theta = None
+            for prop in self.graph.nodes[node_id].get('vehicleTypeNodeProperties', []):
+                if prop.get('vehicleTypeId') == 'Longitudinal_Conveyor':
+                    t = prop.get('theta')
+                    if t is not None and t != 'None':
+                        theta = t
+                    break
+
+            actions = []
+            if i + 1 < len(path_nodes):
+                next_id = path_nodes[i + 1]
+                if next_id in station_by_node:
+                    if station_by_node[next_id]['actionType'] in ('pick', 'drop'):
+                        actions.append({
+                            'actionType': 'init_fine_positioning',
+                            'actionId': str(uuid.uuid4()),
+                            'blockingType': 'HARD',
+                        })
+            if node_id in station_by_node:
+                station = station_by_node[node_id]
+                action_type = station['actionType']
+                if action_type == 'process':
+                    actions.append({
+                        'actionType': 'process',
+                        'actionId': str(uuid.uuid4()),
+                        'blockingType': 'HARD',
+                        'processingTime': station['processingTime'],
+                    })
+                else:
+                    actions.append({
+                        'actionType': action_type,
+                        'actionId': str(uuid.uuid4()),
+                        'blockingType': 'HARD',
+                    })
+
+            order_nodes.append({
+                'nodeId': node_id,
+                'x': x,
+                'y': y,
+                'theta': theta,
+                'actions': actions,
+            })
+        return order_nodes
 
     def build_order_edges(self, path_nodes: list, path_edges: list) -> list:
         """
@@ -199,7 +239,15 @@ class FleetManagement:
               "actions": []}]
         """
         # TODO Task 7: Implement this method.
-        pass
+        return [
+            {
+                'edgeId': path_edges[i],
+                'startNodeId': path_nodes[i],
+                'endNodeId': path_nodes[i + 1],
+                'actions': [],
+            }
+            for i in range(len(path_edges))
+        ]
 
 
 class PathPlanning:
