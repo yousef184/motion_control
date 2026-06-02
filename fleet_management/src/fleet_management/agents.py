@@ -87,7 +87,8 @@ class Agent:
         #   self.current_node  = None   # current node ID (needed by A* in Task 6)
         #   self.current_task  = None   # task dict from task_management.task_list
         # TODO Task 5: Add any additional attributes needed for your implementation.
-        pass
+        self.current_node = "N5"
+        self.current_task = None
 
     def state_callback(self, client, userdata, msg) -> None:
         """
