@@ -1,0 +1,144 @@
+{
+    "headerId": 2,
+    "timestamp": "2026-05-28T15:20:29.4343Z",
+    "version": "V2.1.0",
+    "manufacturer": "IFL",
+    "serialNumber": "IFL_mouse001",
+    "orderId": "2",
+    "orderUpdateId": 0,
+    "nodes": [
+        {
+            "nodeId": "N1",
+            "sequenceId": 0,
+            "released": true,
+            "nodePosition": {
+                "x": 4.72,
+                "y": 1.27,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N2",
+            "sequenceId": 2,
+            "released": true,
+            "nodePosition": {
+                "x": 4.9,
+                "y": 3.5,
+                "mapId": "Map_1",
+                "theta": 0
+            },
+            "actions": [
+                {
+                    "actionType": "init_fine_positioning",
+                    "actionId": "75630579-d230-485f-ba16-308d524e9ace",
+                    "blockingType": "HARD",
+                    "actionParameters": [
+                        {
+                            "key": "init_fine_pos_name",
+                            "value": "station001_A"
+                        },
+                        {
+                            "key": "init_fine_pos_x",
+                            "value": 5.61
+                        },
+                        {
+                            "key": "init_fine_pos_y",
+                            "value": 4.733
+                        },
+                        {
+                            "key": "fine_pos_control_x",
+                            "value": 0.08
+                        },
+                        {
+                            "key": "fine_pos_control_y",
+                            "value": 0.0
+                        },
+                        {
+                            "key": "fine_pos_control_theta",
+                            "value": 1.57
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "nodeId": "N1A",
+            "sequenceId": 4,
+            "released": true,
+            "nodePosition": {
+                "x": 5.61,
+                "y": 4.733,
+                "mapId": "Map_1",
+                "theta": 0
+            },
+            "actions": [
+                {
+                    "actionType": "pick",
+                    "actionId": "3fe52048-daea-4a48-81d3-67cb58311be3",
+                    "blockingType": "HARD"
+                }
+            ]
+        },
+        {
+            "nodeId": "N2",
+            "sequenceId": 6,
+            "released": true,
+            "nodePosition": {
+                "x": 4.9,
+                "y": 3.5,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N1",
+            "sequenceId": 8,
+            "released": true,
+            "nodePosition": {
+                "x": 4.72,
+                "y": 1.27,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        }
+    ],
+    "edges": [
+        {
+            "edgeId": "E1",
+            "sequenceId": 1,
+            "released": true,
+            "startNodeId": "N1",
+            "endNodeId": "N2",
+            "actions": [],
+            "rotationAllowed": false
+        },
+        {
+            "edgeId": "E2",
+            "sequenceId": 3,
+            "released": true,
+            "startNodeId": "N2",
+            "endNodeId": "N1A",
+            "actions": [],
+            "rotationAllowed": false
+        },
+        {
+            "edgeId": "E3",
+            "sequenceId": 5,
+            "released": true,
+            "startNodeId": "N1A",
+            "endNodeId": "N2",
+            "actions": [],
+            "rotationAllowed": false
+        },
+        {
+            "edgeId": "E4",
+            "sequenceId": 7,
+            "released": true,
+            "startNodeId": "N2",
+            "endNodeId": "N1",
+            "actions": [],
+            "rotationAllowed": false
+        }
+    ]
+}
