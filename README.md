@@ -1,182 +1,182 @@
-# Industrial Mobile Robotics Lab - Workspace
+# Motion Control Simulation
 
-## Workspace Structure
+Your task is to design and implement algorithms for planning and controlling the motion of a mobile robot and conveyors to fulfill orders from a management system, while considering realistic conditions such as noise and dynamic constraints.
+
+In the simulation, you will develop a controller to realize the most fundamental function — moving to a desired goal. All other functions, including handling safety states, docking, and controlling conveyor belts for cargo transportation, will be practiced directly on our real mobile robots.
+
+---
+
+## How to Run
+
+1. Open `run_motion_control_simulation.py` in the `imrl_workspace/motion_control/` directory.
+2. Set the desired task number in that file (default: `1`, available: `1`–`3`):
+   ```python
+   args = ["--task", "1", ...]
+   ```
+3. Run it via the VS Code run button or in a terminal:
+   ```bash
+   python run_motion_control_simulation.py
+   ```
+4. The simulation window opens and an order is published. The released part of the route is visualized as a green path; unreleased nodes/edges appear in dark gray.
+
+> **Tip:** Only one script can be executed with the VS Code run button. To run a second script simultaneously (e.g., your control script), use VS Code's "Run and Debug" feature or a separate terminal:
+> ```bash
+> python src/motion_control/task_1.py
+> ```
+
+---
+
+## Project Structure
 
 ```
-imrl_workspace/
-├── fleet_management/   # Fleet management simulation and tasks
-├── motion_control/     # Motion control simulation and tasks
-├── json_examples/      # Example JSON messages (order, state, pose, etc.)
-├── environment.yml     # Conda environment definition
-└── README.md
+motion_control/
+├── run_motion_control_simulation.py   Main entry point — starts the simulation
+├── data/
+│   ├── interface/
+│   │   └── order.schema               VDA 5050 order message JSON schema
+│   │   ├── state.schema               VDA 5050 state message JSON schema
+│   ├── map1/                          Map used for Tasks 1–4
+│   │   ├── LIF.json                   Layout Interchange Format — graph definition
+│   │   ├── order_msg.json             Initial order message
+│   │   ├── updated_order_msg.json     Second (unreleased) part of the order
+│   │   └── static_map.json            Static obstacle map
+│   ├── map5/                          (currently not necessary)
+│   ├── map6/                          (currently not necessary)
+│   ├── map7/                          (currently not necessary)
+│   └── map_ifl/                       (currently not necessary)
+└── src/
+    └── motion_control/
+        ├── task_1.py                  Task 1 — parse the order (starter code)
+        ├── task_2_3.py                Tasks 2 & 3 — execute the order / handle noise (starter code)
+        └── keyboard_control_commented.py (currently not necessary) 
 ```
 
-The practical part of this course is organized into two main folders: `fleet_management` and `motion_control`. Each of these contains a `data` folder and a `src` folder. The `data` folders contain the data required to run the simulations and the `src` folders contain the source code. The `json_examples` folder provides examples of the JSON files you will work with.
+---
 
-Detailed, topic-specific instructions are in the respective sub-READMEs:
-- [fleet_management/README.md](fleet_management/README.md)
-- [motion_control/README.md](motion_control/README.md)
+## MQTT Topics
+
+| Topic | Direction | Content |
+|-------|-----------|---------|
+| `KIT/IMRL/mouse001/order` | Simulation → Your Code | VDA 5050 order message |
+| `KIT/IMRL/mouse001/pose`  | Simulation → Your Code | Current robot pose |
+| `KIT/IMRL/mouse001/cmd`   | Your Code → Simulation | Velocity commands |
+| `KIT/IMRL/mouse001/state` | Your Code → Simulation | VDA 5050 state message |
+
+Example messages for all topics can be found in `imrl_workspace/json_examples/`.
 
 ---
 
-## Getting Started
+## Version Control — One Branch Per Task
 
-### Supported Environments
-
-The simulations require a Linux environment. Three options are supported:
-
-| Option | Notes |
-|--------|-------|
-| **Native Ubuntu 24.04** | Full performance, no extra setup |
-| **Dual-boot Ubuntu 24.04** | Same as native once booted into Ubuntu |
-| **WSL2 (Windows Subsystem for Linux)** | Works on Windows 10/11 — see WSL notes below |
-
-> **WSL setup notes:**
-> 1. Open PowerShell as Administrator and run `wsl --install -d Ubuntu-24.04`, then restart.
-> 2. **GUI support (required for the simulation window):**
->    - **Windows 11**: WSLg is built in — no extra setup needed.
->    - **Windows 10**: Install [VcXsrv](https://sourceforge.net/projects/vcxsrv/) (launch with *Disable access control* checked), then add `export DISPLAY=:0` to your `~/.bashrc`.
-> 3. All remaining steps below are run **inside the WSL terminal**, not in PowerShell.
-
----
-
-### Step 1 — Install VS Code
-
-Install [VS Code](https://code.visualstudio.com/Download).
-
-- **Native/dual-boot:** follow the Ubuntu instructions on the download page.
-- **WSL:** install VS Code on the **Windows** side. The WSL integration (remote connection into Linux) is handled automatically when you run `code .` from a WSL terminal for the first time.
-
----
-
-### Step 2 — Install Git
-
+Each task builds on the previous one. To always have a working version to fall back to, **create one Git branch per task**:
+All branches should be under your u-account namespace
 ```bash
-sudo apt update && sudo apt install -y git
+# Start Motion Control Task 1 from main
+git checkout main
+git checkout -b u-account/mc-task-1
+
+# ... implement Task 1 in src/motion_control/task_1.py ...
+git add src/motion_control/mc-task_1.py
+git commit -m "Task 1: order parsing implemented"
+
+# Start Task 2 from Task 1
+git checkout u-account/mc-task-1
+git checkout -b u-account/mc-task-2
+# ... continue for Tasks 2, 3
 ```
 
-Configure your identity (required for commits):
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-```
-
-Verify:
-
-```bash
-git --version
-```
----
-
-### Step 3 — Generate and Add an SSH Key to your GitLab Account
-
-1. Generate a new SSH key pair (accept the default path, optionally set a passphrase):
-    ```bash
-    ssh-keygen -t ed25519 -C "you@example.com"
-    ```
-
-2. Copy the public key to your clipboard:
-    ```bash
-    cat ~/.ssh/id_ed25519.pub
-    ```
-
-3. In GitLab, go to **User Settings → SSH Keys**, paste the key, and click **Add key**.
-
-4. Verify the connection:
-    ```bash
-    ssh -T git@gitlab.kit.edu
-    ```
-    You should see a welcome message confirming your username.
-
-> For detailed instructions, see the [GitLab SSH documentation](https://gitlab.kit.edu/help/user/ssh.md).
+**Tip:** Commit at the end of every implemented feature, not only when everything works.
 
 ---
 
-### Step 4 — Clone the Repository
+## Tasks
 
-```bash
-git clone git@gitlab.kit.edu:kit/ifl/lehrveranstaltungen/industrial-mobile-robotics-lab/imrl_workspace.git
-cd imrl_workspace
-```
+> **Minimum requirement for the individual work:** Complete **Tasks 0 – 3** (Milestone 1).
 
-> **WSL users:** run this inside the WSL terminal so the files live in the Linux filesystem.
+### Task 0 — Test the Simulation Environment (no implementation)
 
----
+Before starting the individual tasks, verify that the simulation works.
 
-### Step 5 — Open the Workspace in VS Code
-
-From the terminal inside the `imrl_workspace` folder:
-
-```bash
-code .
-```
-
-- Install the **Python** extension in VS Code if prompted (or search for it in the Extensions sidebar).
+1. Follow the "How to Run" section above to start the simulation.
+2. Use the **arrow keys** to drive the robot. Make sure the simulation window is activated — otherwise key presses are not captured.
+4. The robot's trajectory is shown in red. If the robot moves, your environment is ready.
 
 ---
 
-### Step 6 — Set Up the Conda Environment
+### Task 1 — Parse the Order
 
-1. Install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) if not already installed (follow the Linux instructions).
-   A [conda cheatsheet](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf) is available for reference.
+**File:** `src/motion_control/task_1.py`
 
-2. Open a terminal in VS Code and verify the installation:
-    ```bash
-    conda --version
-    ```
-    If `conda` is not found, initialize it for your shell, then restart the terminal:
-    ```bash
-    conda init bash
-    ```
+Parse the necessary information from the VDA 5050 order message and convert it into a **route** (an ordered list of waypoints).
 
-3. Create the virtual environment from the provided `environment.yml`:
-    ```bash
-    conda env create -n imrl_env -f environment.yml
-    ```
+- Orders are published on `KIT/IMRL/mouse001/order`.
+- Only **released** nodes and edges (`"released": true`) should be included in the route.
+- Released nodes and edges are visualized in green; unreleased ones in dark gray.
 
-4. Activate the environment:
-    ```bash
-    conda activate imrl_env
-    ```
+**Steps to implement in `Robot.receive_order()`:**
+1. Decode the JSON payload.
+2. Extract `nodes` and `edges` from the message.
+3. Filter to only the released entries.
+4. Store the waypoint positions in a list for use in Task 2.
 
-5. Select `imrl_env` as the Python interpreter in VS Code:
-   Press `Ctrl+Shift+P`, type **Python: Select Interpreter**, and choose the entry that contains `imrl_env`.
-   This ensures the run button and the Testing sidebar use the correct Python.
+**Goal:** Print the sequence of released node positions `(x, y)` that form the route.
 
 ---
 
-### Step 7 — Install and Verify the Mosquitto MQTT Broker
+### Task 2 — Execute the Order
+**remember to set the correct task in run_motion_control_simulation.py**
+**File:** `src/motion_control/task_2_3.py`
 
-1. Install Mosquitto:
-    ```bash
-    sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
-    sudo apt update
-    sudo apt install mosquitto mosquitto-clients
-    ```
-    On Ubuntu, this automatically starts the broker as a systemd service on port 1883 and enables it at boot.
+Control the robot to drive along the extracted route, waypoint by waypoint.
 
-2. Verify the service is running:
-    ```bash
-    sudo systemctl status mosquitto
-    ```
+- The robot's pose (without noise) is published on `KIT/IMRL/mouse001/pose`.
+- Velocity commands must be published to `KIT/IMRL/mouse001/cmd`.
+- Make sure the robot will drive through all released nodes.
+- Only the released route may be executed.
 
-3. Test the broker — open two terminals and run:
-    ```bash
-    # Terminal 1 — subscribe
-    mosquitto_sub -h localhost -t test/topic
+**State reporting (required to unlock the second part of the order):**
+- Build and publish a VDA 5050-compliant state message to `KIT/IMRL/mouse001/state`.
+- The simulation releases the second part of the order only after receiving a correct state message.
+- An example state message is in `imrl_workspace/json_examples/stateMessage_Example.json`. For motion control task 2 and task 3, you only need to give the correct `lastNodeId`.
 
-    # Terminal 2 — publish
-    mosquitto_pub -h localhost -t test/topic -m "Hello, World!"
-    ```
-    You should see `Hello, World!` appear in Terminal 1.
+**Steps to implement:**
+1. `Robot.update_pose()` — parse the pose message and update `self.x`, `self.y`, `self.theta`.
+2. `Robot.receive_order()` — build `self.trajectory` from released node positions.
+3. `Robot.build_status_message()` — construct a VDA 5050 state dict.
+4. `follow_trajectory()` — implement a controller (e.g., proportional) that computes `linear_vel` and `angular_vel`, advances `current_index` when close enough to the target, and sets `status_update_needed = True` on waypoint arrival.
+
+
+**Evaluation:** The deviation from the assigned route is shown in the upper right corner of the simulation window. Minimize it.
 
 ---
 
-### Step 8 — Install MQTT Explorer
+### Task 3 — Handle Noise and Dynamic Constraints
 
-[MQTT Explorer](https://mqtt-explorer.com/) is a useful tool to inspect and publish MQTT messages for debugging.
+**File:** `src/motion_control/task_2_3.py`
 
-1. Download and install it from [mqtt-explorer.com](https://mqtt-explorer.com/).
-2. Connect to `localhost` on port `1883`.
-3. You should see incoming messages as soon as the simulation is running.
+Adapt the controller from Task 2 to handle realistic conditions:
+
+- **Execution noise and delay:** Gaussian noise is introduced to simulate imperfect robot execution, meaning that the robot may not follow commands exactly and command execution may be delayed.
+- **Dynamic constraints:** The robot's acceleration, deceleration, and maximum velocity are limited — abrupt velocity changes are not possible.
+
+**Goal:** Minimize the deviation from the assigned route under these conditions.
+
+**Suggested adaptations:**
+- Apply a low-pass filter or moving-average filter to smooth noisy pose readings.
+- Implement velocity ramp-up/ramp-down to respect acceleration limits (e.g., gradually increase/decrease speed rather than jumping to maximum velocity immediately).
+- Tune controller gains to avoid oscillation caused by noisy feedback.
+
+
+
+---
+
+## Troubleshooting
+
+- **Robot does not move:** Verify the MQTT broker (Mosquitto) is running (`mosquitto -v`) and that your control script is connected to `localhost:1883`.
+- **Keys not captured in keyboard control:** Click on the simulation window to give it focus before pressing arrow keys.
+- **Simulation does not open:** Check that `run_simulation` executable has execute permission:
+  In a terminal, navigate to your imrl_workspace, then run
+  ```bash
+  chmod +x motion_control/src/mobile_robot_simulation/dist/run_simulation
+  ```
+- **Second part of order never released:** Ensure your state message includes all required VDA 5050 fields. Compare with `json_examples/stateMessage_Example.json`.

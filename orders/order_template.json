@@ -1,0 +1,45 @@
+{
+    "headerId": 2,
+    "timestamp": "2026-05-28T15:20:29.4343Z",
+    "version": "V2.1.0",
+    "manufacturer": "IFL",
+    "serialNumber": "IFL_mouse001",
+    "orderId": "2",
+    "orderUpdateId": 0,
+    "nodes": [
+        {
+            "nodeId": "N1",
+            "sequenceId": 0,
+            "released": true,
+            "nodePosition": {
+                "x": 4.72,
+                "y": 1.27,
+                "mapId": "Map_1"
+            },
+            "actions": []
+        },
+        {
+            "nodeId": "N2",
+            "sequenceId": 2,
+            "released": true,
+            "nodePosition": {
+                "x": 4.9,
+                "y": 3.5,
+                "mapId": "Map_1",
+                "theta": 0
+            },
+            "actions": []
+        }
+    ],
+    "edges": [
+        {
+            "edgeId": "E1",
+            "sequenceId": 1,
+            "released": true,
+            "startNodeId": "N1",
+            "endNodeId": "N2",
+            "actions": [],
+            "rotationAllowed": false
+        }
+    ]
+}
