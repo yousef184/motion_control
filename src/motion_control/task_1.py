@@ -26,7 +26,20 @@ class Robot:
         #     print(f"Node ID: {node['nodeId']} at ({node['x']}, {node['y']})")
         """
         # TODO: Implement order parsing and printing logic here
-        pass
+
+        # Decode the JSON string into a Python dictionary
+        payload = json.loads(msg.payload.decode('utf-8'))
+        nodes = payload["nodes"]
+        edges = payload["edges"]
+        for node in nodes:
+            if node["released"] == True:
+                self.nodes.append(node)
+        for edge in edges:
+            if edge["released"] == True:
+                self.edges.append(edge)
+        for node in self.nodes:
+            print(f"Node ID: {node['nodeId']} at ({node['nodePosition']['x']}, {node['nodePosition']['y']})")
+       
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe(userdata["topic_order"])
@@ -47,7 +60,6 @@ def main():
         "robot": robot,
         "topic_order": topic_order
     })
-
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect("localhost", 1883, 60)
