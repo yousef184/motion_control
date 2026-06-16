@@ -1,6 +1,6 @@
 '''
 Integrated VDA5050 Robot Controller
-Combines PD differential control with robust pose initialization and angle normalization.
+Combines PID control (with anti-windup) with robust pose initialization and angle normalization.
 '''
 
 import json
@@ -35,9 +35,11 @@ class Robot:
         self.trajectory = []            # List of (x, y) waypoints
         self.current_index = 0          # Index of current waypoint
         
-        # PD Controller tracking variables
+        # PID Controller tracking variables
         self.prev_distance_error = 0.0  
-        self.prev_angle_error = 0.0     
+        self.prev_angle_error = 0.0
+        self.sum_distance_error = 0.0   # Added Integral term for distance
+        self.sum_angle_error = 0.0      # Added Integral term for angle
         self.last_time = time.time()   
 
         # Filter and State variables
@@ -103,12 +105,14 @@ class Robot:
         self.last_node_id = None
         self.status_update_needed = True
         
-        # Reset velocities and poses for new order
+        # Reset velocities, poses, and PID memory for new order
         self.pose_initialized = False
         self.cmd_linear_v = 0.0
         self.cmd_angular_v = 0.0
         self.prev_distance_error = 0.0
         self.prev_angle_error = 0.0
+        self.sum_distance_error = 0.0
+        self.sum_angle_error = 0.0
         
         print("[ORDER] trajectory:", [(t["x"], t["y"]) for t in self.trajectory])
 
@@ -172,9 +176,13 @@ def follow_trajectory(robot: Robot):
         target_x = target['x']
         target_y = target['y']
 
-        # PD parameters
-        kp1, kd1 = 0.5, 0.5   # Linear
-        kp2, kd2 = 1.1, 1.0   # Angular
+        # PID parameters (Proportional, Integral, Derivative)
+        kp1, ki1, kd1 = 0.5, 0.05, 0.05   # Linear
+        kp2, ki2, kd2 = 1.1, 0.10, 0.1   # Angular
+
+        # Anti-windup clamping limits for integrals
+        MAX_I_LIN = 2.0
+        MAX_I_ANG = 2.0
 
         current_time = time.time()
         dt = current_time - robot.last_time
@@ -197,13 +205,22 @@ def follow_trajectory(robot: Robot):
         while angle_error < -math.pi:
             angle_error += 2.0 * math.pi
 
+        # Update Integral terms with Anti-Windup Clamping
+        # (Only accumulate distance integral if we aren't heavily turning in place)
+        if abs(angle_error) <= 0.35:
+            robot.sum_distance_error += distance_error * dt
+            robot.sum_distance_error = max(-MAX_I_LIN, min(MAX_I_LIN, robot.sum_distance_error))
+
+        robot.sum_angle_error += angle_error * dt
+        robot.sum_angle_error = max(-MAX_I_ANG, min(MAX_I_ANG, robot.sum_angle_error))
+
         # Derivative terms
         dv = (distance_error - robot.prev_distance_error) / dt
         da = (angle_error - robot.prev_angle_error) / dt
 
-        # PD Control Output
-        linear_vel = kp1 * distance_error + kd1 * dv
-        angular_vel = kp2 * angle_error + kd2 * da
+        # PID Control Output
+        linear_vel = kp1 * distance_error + ki1 * robot.sum_distance_error + kd1 * dv
+        angular_vel = kp2 * angle_error + ki2 * robot.sum_angle_error + kd2 * da
 
         # Turn-First Logic: Limit linear speed if facing the wrong way
         if abs(angle_error) > 0.35:
@@ -234,9 +251,11 @@ def follow_trajectory(robot: Robot):
             robot.last_node_id = target.get("nodeId", "")
             robot.status_update_needed = True
             
-            # Reset errors and velocity for clean cornering
+            # Reset errors, integrals, and velocity for clean cornering
             robot.prev_distance_error = 0.0
             robot.prev_angle_error = 0.0
+            robot.sum_distance_error = 0.0
+            robot.sum_angle_error = 0.0
             robot.cmd_linear_v = 0.0
             robot.cmd_angular_v = 0.0
 
@@ -282,7 +301,7 @@ def main(robot_name):
     client = mqtt.Client()
     client.on_connect = on_connect 
     client.on_message = on_message 
-    client.connect("localhost", 1883, 60)
+    client.connect("172.22.222.238", 1883, 60)
     client.loop_start()
 
     last_status_time = time.time()
